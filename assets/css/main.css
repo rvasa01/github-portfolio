@@ -17,6 +17,17 @@
   --nav-font: "Poppins",  sans-serif;
 }
 
+h7 {
+  font-family: "Poppins", sans-serif; /* Custom font */
+  font-size: 18px; /* Set desired font size */
+  font-weight: 600; /* Semi-bold weight */
+  color: #149ddd; /* Custom color */
+  text-transform: uppercase; /* Optional: Make it uppercase */
+  letter-spacing: 0.5px; /* Adjust spacing between letters */
+  margin-bottom: 10px; /* Add spacing below the element */
+  display: block; /* Ensures it behaves like other heading elements */
+}
+
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
 :root { 
   --background-color: #ffffff; /* Background color for the entire website, including individual sections */
