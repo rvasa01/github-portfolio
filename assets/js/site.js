@@ -228,16 +228,27 @@
           const cw = narrow ? w - 3 * m - 2 * cr : Math.min(w * 0.46, 460), ch = narrow ? 50 : 64;
           frame(ctx, m, m, cw, ch, { kind: "ticks", fill: C.fill });
           const lx = m + 12, vx = lx + (narrow ? 40 : 52), r1 = m + (narrow ? 20 : 26), r2 = r1 + (narrow ? 19 : 24), fq = narrow ? 12 : f;
+          // Timeline of one step: ask from the current state, take the answer,
+          // show the possible branches, then the transition fires along the chosen one.
+          const last = i === N - 1;
+          const candAt = last ? 0.2 : 0.5, fireAt = last ? 0.3 : 0.62;
+          const arrived = done || p >= 0.96;
+          const cur = arrived ? i : i - 1; // column of the state the machine is in
           if (done) {
             text(ctx, "output", lx, r1, { mono: true, size: 10, color: C.red });
-            text(ctx, "One report for this path", vx, r1, { size: fq });
+            text(ctx, "One report for this route", vx, r1, { size: fq });
             text(ctx, "same answers, same route", lx, r2, { mono: true, size: 10, color: C.dim });
+          } else if (last) {
+            text(ctx, "state", lx, r1, { mono: true, size: 10, color: C.dim });
+            text(ctx, "Every question answered", vx, r1, { size: fq });
+            text(ctx, "next", lx, r2, { mono: true, size: 10, color: C.red });
+            text(ctx, p >= fireAt ? "Generating the report" : "", vx, r2, { size: fq, color: C.dim });
           } else {
             const S = STAGES[i], ans = S.opts[run[i]];
-            const q = i === 0 ? S.q : S.q, qn = Math.floor(q.length * clamp(p / 0.22, 0, 1));
-            const an = Math.floor(ans.length * clamp((p - 0.3) / 0.2, 0, 1));
+            const qn = Math.floor(S.q.length * clamp(p / 0.22, 0, 1));
+            const an = Math.floor(ans.length * clamp((p - 0.28) / 0.2, 0, 1));
             text(ctx, "asks", lx, r1, { mono: true, size: 10, color: C.red });
-            text(ctx, q.slice(0, qn), vx, r1, { size: fq });
+            text(ctx, S.q.slice(0, qn), vx, r1, { size: fq });
             text(ctx, "user", lx, r2, { mono: true, size: 10, color: C.dim });
             text(ctx, ans.slice(0, an), vx, r2, { size: fq, color: C.dim });
           }
@@ -251,47 +262,55 @@
           const nodeY = (k, o) => (STAGES[k].opts.length === 1 ? midY : gTop + 18 + rowGap * (o + 0.5));
           STAGES.forEach((S, k) => text(ctx, S.name, colX[k], gTop, { mono: true, size: 10, align: "center", color: k === i && !done ? C.red : C.faint }));
 
-          // how far along the chosen route are we?
-          const reached = (k) => k < i || done || (k === i);
           const chosen = (k, o) => run[k] === o;
-          // edges: every option of k fans out to every option of k+1; the taken edge is lit
-          for (let k = 0; k < N - 1; k++) {
-            STAGES[k].opts.forEach((_, a) => STAGES[k + 1].opts.forEach((__, b) => {
-              const taken = chosen(k, a) && chosen(k + 1, b);
-              const lit = taken && (k < i || done);
-              const moving = taken && k === i && !done && p > 0.62;
-              if (!taken && !(chosen(k, a) && reached(k))) return;
-              const x1 = colX[k], y1 = nodeY(k, a), x2 = colX[k + 1], y2 = nodeY(k + 1, b);
-              const ang = Math.atan2(y2 - y1, x2 - x1);
-              const sx = x1 + Math.cos(ang) * (r + 3), sy = y1 + Math.sin(ang) * (r + 3);
-              const ex = x2 - Math.cos(ang) * (r + 4), ey = y2 - Math.sin(ang) * (r + 4);
-              if (lit) arrow(ctx, sx, sy, ex, ey, C.ink, 1.5, 6);
-              else if (taken && moving) {
+          const deciding = !arrived && p >= candAt; // branches of column i are on show
+          const seg = (k, a, b) => {
+            const x1 = colX[k], y1 = nodeY(k, a), x2 = colX[k + 1], y2 = nodeY(k + 1, b);
+            const ang = Math.atan2(y2 - y1, x2 - x1);
+            return [x1 + Math.cos(ang) * (r + 3), y1 + Math.sin(ang) * (r + 3), x2 - Math.cos(ang) * (r + 4), y2 - Math.sin(ang) * (r + 4)];
+          };
+          // route already travelled, with the branches not taken left faint
+          for (let k = 0; k < cur; k++) {
+            const a = run[k];
+            STAGES[k + 1].opts.forEach((_, b) => {
+              const [sx, sy, ex, ey] = seg(k, a, b);
+              if (chosen(k + 1, b)) arrow(ctx, sx, sy, ex, ey, C.ink, 1.5, 6);
+              else line(ctx, [[sx, sy], [ex, ey]], C.hair, 1, [2, 4]);
+            });
+          }
+          // the transition being decided right now
+          if (deciding && i > 0) {
+            const a = run[i - 1];
+            STAGES[i].opts.forEach((_, b) => {
+              const [sx, sy, ex, ey] = seg(i - 1, a, b);
+              if (chosen(i, b)) {
                 arrow(ctx, sx, sy, ex, ey, C.dim, 1, 6);
-                const q = ease((p - 0.62) / 0.38);
-                pkt(ctx, lerp(sx, ex, q), lerp(sy, ey, q), 6, C.red);
-              } else if (chosen(k, a) && k === i && !done) line(ctx, [[sx, sy], [ex, ey]], C.line, 1, [2, 4]);
-              else if (chosen(k, a) && (k < i || done)) line(ctx, [[sx, sy], [ex, ey]], C.hair, 1, [2, 4]);
-            }));
+                if (p >= fireAt) { const q = ease((p - fireAt) / (0.96 - fireAt)); pkt(ctx, lerp(sx, ex, q), lerp(sy, ey, q), 6, C.red); }
+              } else line(ctx, [[sx, sy], [ex, ey]], C.line, 1, [2, 4]);
+            });
           }
           // start arrow into the initial state
-          arrow(ctx, colX[0] - r - 26, midY, colX[0] - r - 4, midY, C.dim, 1, 5);
+          const s0 = colX[0] - r - 30, s1 = colX[0] - r - 4;
+          arrow(ctx, s0, midY, s1, midY, i === 0 && deciding ? C.ink : C.dim, 1, 5);
+          if (i === 0 && deciding && p >= fireAt) pkt(ctx, lerp(s0, s1, ease((p - fireAt) / (0.96 - fireAt))), midY, 6, C.red);
 
           // states
           STAGES.forEach((S, k) => S.opts.forEach((label, o) => {
             const x = colX[k], y = nodeY(k, o);
             const onRoute = chosen(k, o);
-            const active = onRoute && k === i && !done;
-            const visited = onRoute && (k < i || done);
-            const preview = onRoute && k === i + 1 && !done && p > 0.5;
+            const active = onRoute && k === cur;
+            const visited = onRoute && k < cur;
+            const candidate = deciding && k === i;
             ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
             ctx.fillStyle = active || visited ? C.fill : C.bg; ctx.fill();
-            ctx.strokeStyle = active || visited ? C.ink : preview ? C.dim : C.line; ctx.lineWidth = active ? 1.5 : 1; ctx.stroke();
+            ctx.strokeStyle = active || visited || (candidate && onRoute) ? C.ink : candidate ? C.dim : C.line;
+            ctx.lineWidth = active ? 1.5 : 1; ctx.stroke();
             if (k === N - 1) { ctx.beginPath(); ctx.arc(x, y, r - 4, 0, Math.PI * 2); ctx.stroke(); }
-            if (active || (done && k === N - 1)) { ctx.beginPath(); ctx.arc(x, y, r + 6, 0, Math.PI * 2); ctx.strokeStyle = C.red; ctx.lineWidth = 1.5; ctx.stroke(); }
+            if (active) { ctx.beginPath(); ctx.arc(x, y, r + 6, 0, Math.PI * 2); ctx.strokeStyle = C.red; ctx.lineWidth = 1.5; ctx.stroke(); }
             if (visited || active) pkt(ctx, x, y, 4, active ? C.red : C.ink);
-            const show = !narrow || onRoute;
-            if (show) text(ctx, label, x, y + r + (narrow ? 13 : 17) + (active ? 7 : 0), { size: narrow ? 10 : Math.max(11, f - 3), align: "center", color: active || visited ? C.ink : C.faint });
+            const show = !narrow || (onRoute && k <= cur) || (candidate && onRoute);
+            const col = active || visited ? C.ink : candidate && onRoute ? C.dim : C.faint;
+            if (show) text(ctx, label, x, y + r + (narrow ? 13 : 17) + (active ? 7 : 0), { size: narrow ? 10 : Math.max(11, f - 3), align: "center", color: col });
           }));
           if (!narrow) text(ctx, "each circle is a state", m, h - m, { mono: true, size: 10, color: C.faint });
           t++;
