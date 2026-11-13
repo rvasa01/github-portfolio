@@ -21,7 +21,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-padding-top: calc(var(--bar) + 16px); background: var(--black); scrollbar-color: var(--line) var(--black); }
+html { overflow-x: clip; scroll-padding-top: calc(var(--bar) + 16px); background: var(--black); scrollbar-color: var(--line) var(--black); }
 
 body {
   margin: 0;
@@ -118,15 +118,17 @@ main { padding: var(--bar) 0; }
   line-height: 0.88;
   letter-spacing: -0.025em;
 }
+/* Name with portrait beside it */
+.title-name { display: flex; align-items: center; gap: clamp(24px, 3vw, 48px); }
+.portrait { width: clamp(110px, 13vw, 200px); height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; display: block; flex-shrink: 0; }
+
 /* Logo strip under the name, in brand colors (dark-background versions) */
 .marks { list-style: none; margin: 36px 0 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 18px 40px; }
 .marks img { display: block; width: auto; }
 .mark-ms { height: 22px; }
 .mark-aws { height: 30px; margin-top: 6px; }
 .mark-gt { height: 30px; }
-.title-role { margin: 32px 0 0; font-size: clamp(19px, 1.6vw, 23px); font-weight: 500; letter-spacing: -0.01em; text-wrap: balance; }
-.title-lede { margin: 12px 0 0; max-width: 34em; color: var(--dim); text-wrap: pretty; }
-.title-actions, .closing-actions { margin: 32px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; }
+.title-actions, .closing-actions { margin: 40px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; }
 
 .btn {
   display: inline-block;
@@ -157,12 +159,11 @@ main { padding: var(--bar) 0; }
 
 /* About */
 .about {
-  display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 40px;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px;
   align-items: start;
   padding: clamp(72px, 12vh, 140px) var(--pad);
   max-width: 1100px;
 }
-.about img { width: 160px; height: 200px; object-fit: cover; object-position: 50% 20%; filter: grayscale(1) contrast(1.05); }
 .about-text { max-width: 34em; font-size: clamp(20px, 1.7vw, 24px); line-height: 1.5; letter-spacing: -0.005em; }
 .about-text p { margin: 0 0 1em; }
 .about-text p:last-child { margin: 0; color: var(--dim); }
@@ -308,8 +309,8 @@ main { padding: var(--bar) 0; }
   .bar { font-size: 15px; }
 }
 @media (max-width: 900px) {
-  .title { grid-template-columns: 1fr; }
-  .title-footage { min-height: 0; aspect-ratio: 16 / 10; order: -1; }
+  .title { grid-template-columns: minmax(0, 1fr); }
+  .title-footage { min-height: 0; width: 100%; min-width: 0; align-self: start; aspect-ratio: 16 / 10; order: -1; }
   .scene-body, .reel, .schools { grid-template-columns: 1fr; }
   .reel { align-items: start; }
 }
@@ -333,7 +334,6 @@ main { padding: var(--bar) 0; }
   .about { grid-template-columns: 1fr; gap: 24px; }
   .marks { gap: 14px 28px; margin-top: 28px; }
   .mark-ms { height: 18px; } .mark-aws { height: 24px; } .mark-gt { height: 25px; }
-  .about img { width: 120px; height: 150px; }
   .steps, .reel .steps { grid-template-columns: 1fr; }
   .steps button { padding: 10px 0 4px; }
   .steps .d { font-size: 14px; }
