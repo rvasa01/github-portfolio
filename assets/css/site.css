@@ -54,8 +54,7 @@ h1, h2, h3 { font-family: var(--sans); color: var(--ink); margin: 0; }
 /* Top bar */
 .topbar {
   position: sticky; top: 0; z-index: 10;
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
-  backdrop-filter: blur(6px);
+  background: var(--paper);
   border-bottom: 1px solid var(--rule);
 }
 .topbar-inner {
@@ -89,6 +88,7 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
   margin-left: -0.04em;
 }
 .role {
+  text-wrap: balance;
   font-family: var(--sans);
   font-size: clamp(19px, 2.2vw, 24px);
   font-weight: 500;
@@ -113,7 +113,7 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
 .block:last-child { border-bottom: 0; }
 .block > h2 {
   font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
-  position: sticky; top: 84px; align-self: start;
+  position: sticky; top: 84px; align-self: start; margin-top: -0.2em;
 }
 .block-body { min-width: 0; max-width: 44em; }
 .prose p { margin: 0 0 1em; }
@@ -128,7 +128,7 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
   column-gap: 24px;
 }
 .job-head h3 { font-size: 21px; font-weight: 650; line-height: 1.3; letter-spacing: -0.01em; }
-.job-head .org { grid-column: 1; margin: 2px 0 0; color: var(--accent); font-family: var(--sans); font-weight: 500; font-size: 17px; }
+.job-head .org { grid-column: 1; margin: 2px 0 0; color: var(--muted); font-family: var(--sans); font-weight: 500; font-size: 17px; }
 .job-head .when {
   grid-column: 2; grid-row: 1;
   margin: 0; color: var(--muted); font-family: var(--sans); font-size: 15px;
@@ -141,7 +141,7 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
 /* Projects */
 .projects { list-style: none; margin: 0; padding: 0; }
 .projects li { padding: 0 0 28px; margin: 0 0 28px; border-bottom: 1px solid var(--rule); }
-.projects li:last-child { border-bottom: 0; margin-bottom: 0; }
+.projects li:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
 .projects h3 { font-size: 20px; font-weight: 650; letter-spacing: -0.01em; line-height: 1.3; }
 .projects h3 a { color: var(--ink); text-decoration-color: var(--rule); }
 .projects h3 a:hover { color: var(--accent); text-decoration-color: currentColor; }
@@ -150,7 +150,7 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
 .more { margin: 32px 0 0; font-family: var(--sans); font-weight: 500; }
 
 /* Definition lists (education details, skills) */
-dl { margin: 16px 0 0; display: grid; grid-template-columns: 9.5em 1fr; gap: 10px 20px; }
+dl { margin: 16px 0 0; display: grid; grid-template-columns: 8em 1fr; gap: 10px 20px; }
 dt { font-family: var(--sans); font-weight: 600; font-size: 16px; padding-top: 2px; }
 dd { margin: 0; }
 .skills { margin-top: 0; gap: 18px 20px; }
@@ -158,7 +158,7 @@ dd { margin: 0; }
 /* Contact */
 .contact-lede { margin: 0 0 20px; }
 .contact-list { list-style: none; margin: 0; padding: 0; }
-.contact-list li { display: grid; grid-template-columns: 6em 1fr; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.contact-list li { display: grid; grid-template-columns: 8em 1fr; column-gap: 20px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
 .contact-list li:first-child { border-top: 1px solid var(--rule); }
 .contact-list span { font-family: var(--sans); font-weight: 600; font-size: 16px; padding-top: 2px; }
 .contact-list a { overflow-wrap: anywhere; }
@@ -175,10 +175,10 @@ dd { margin: 0; }
 
 .footer {
   max-width: var(--wrap); margin: 0 auto;
-  padding: 32px var(--gutter) 48px;
-  border-top: 1px solid var(--rule);
+  padding: 0 var(--gutter) 48px;
   font-family: var(--sans); font-size: 14px; color: var(--muted);
 }
+.footer p { margin: 0; padding-top: 32px; border-top: 1px solid var(--rule); }
 .footer a { color: var(--muted); }
 
 /* Narrow screens */
@@ -205,7 +205,7 @@ dd { margin: 0; }
 
 /* Experience: role index beside the heading */
 .block-head { position: sticky; top: 84px; align-self: start; }
-.block-head h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+.block-head h2 { margin-top: -0.2em; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
 .jump { list-style: none; margin: 18px 0 0; padding: 0; font-family: var(--sans); font-size: 15px; }
 .jump li { margin: 0 0 6px; }
 .jump a { color: var(--muted); text-decoration: none; }
@@ -213,4 +213,14 @@ dd { margin: 0; }
 @media (max-width: 860px) {
   .block-head { position: static; }
   .jump { display: none; }
+}
+
+/* Sub-terms inside one employer */
+.term { font-family: var(--sans); font-size: 15px; font-weight: 500; color: var(--muted); margin: 22px 0 0; }
+.term + ul { margin-top: 8px; }
+
+@media (max-width: 640px) {
+  .topbar { position: static; }
+  html { scroll-padding-top: 16px; }
+  .topbar nav a { display: inline-block; padding: 6px 0; }
 }
