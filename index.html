@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Rahil Vasa</title>
   <meta name="description" content="Rahil Vasa is a software engineer on Microsoft's Azure Security team. Previously: firmware security at AWS, founding engineer at a stealth AI startup, and threat detection at Honeypot Technologies.">
+  <meta name="theme-color" content="#000000">
   <meta property="og:title" content="Rahil Vasa">
   <meta property="og:description" content="Software engineer, Azure Security at Microsoft.">
   <meta property="og:image" content="https://rvasa01.github.io/github-portfolio/assets/img/profile-picture-rahil.jpg">
@@ -13,77 +14,89 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Manrope:wght@400..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/site.css">
+  <script src="assets/js/site.js" defer></script>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <filter id="steel" color-interpolation-filters="sRGB">
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncR type="table" tableValues="0 0.56"/>
+        <feFuncG type="table" tableValues="0 0.70"/>
+        <feFuncB type="table" tableValues="0 0.80"/>
+      </feComponentTransfer>
+    </filter>
+  </svg>
   <a class="skip" href="#main">Skip to content</a>
 
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a class="wordmark" href="#top">Rahil Vasa</a>
-      <nav aria-label="Sections">
-        <a href="#experience">Experience</a>
-        <a href="#projects">Projects</a>
-        <a href="#education">Education</a>
-        <a href="#skills">Skills</a>
-        <a href="#contact">Contact</a>
-      </nav>
-    </div>
+  <header class="bar bar-top">
+    <a class="bar-name" href="#top">Rahil Vasa</a>
+    <nav aria-label="Sections">
+      <a href="#scenes">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#credits">Education</a>
+      <a href="#contact">Contact</a>
+    </nav>
   </header>
 
+  <div class="bar bar-bottom" aria-hidden="true">
+    <p class="counter"><span class="counter-num">00</span><span class="counter-total">/ 09</span><span class="counter-name">Title card</span></p>
+    <a class="bar-cta" href="#contact" tabindex="-1">Get in touch</a>
+  </div>
+
   <main id="main">
-    <section class="hero" id="top">
-      <div class="hero-text">
-        <h1>Rahil Vasa</h1>
-        <p class="role">Software Engineer, Azure Security at&nbsp;Microsoft</p>
-        <p class="lede">My work has spanned firmware security at AWS, threat detection at a security startup, and deterministic AI pipelines as a founding engineer.</p>
-        <p class="hero-links">
-          <a href="https://www.linkedin.com/in/rahil-vasa-8b364a115/" target="_blank" rel="noopener">LinkedIn</a>
-          <a href="https://github.com/rvasa01" target="_blank" rel="noopener">GitHub</a>
-          <a href="mailto:rahilhardikvasa@gmail.com">Email</a>
+
+    <section class="title" id="top" data-scene="00" data-scene-name="Title card">
+      <div class="title-text">
+        <h1>Rahil<br>Vasa</h1>
+        <p class="title-role">Software Engineer, Azure Security at&nbsp;Microsoft</p>
+        <p class="title-lede">My work has spanned firmware security at AWS, threat detection at a security startup, and deterministic AI pipelines as a founding engineer.</p>
+        <p class="title-actions">
+          <a class="btn" href="#contact">Get in touch</a>
+          <a class="link" href="https://github.com/rvasa01" target="_blank" rel="noopener">GitHub</a>
+          <a class="link" href="https://www.linkedin.com/in/rahil-vasa-8b364a115/" target="_blank" rel="noopener">LinkedIn</a>
         </p>
       </div>
-      <img class="portrait" src="assets/img/profile-picture-rahil.jpg" width="598" height="598" alt="Portrait of Rahil Vasa">
+      <figure class="title-footage">
+        <canvas data-film="life" aria-hidden="true"></canvas>
+        <figcaption>Game of Life, recreated in code</figcaption>
+      </figure>
     </section>
 
-    <section class="block" id="about" aria-labelledby="about-h">
-      <h2 id="about-h">About</h2>
-      <div class="block-body prose">
+    <section class="about" aria-label="About">
+      <img src="assets/img/profile-picture-rahil.jpg" alt="Portrait of Rahil Vasa" width="598" height="598" loading="lazy">
+      <div class="about-text">
         <p>I'm a software engineer on Microsoft's Azure Security team. Before that I was the founding engineer at a stealth AI startup, building a deterministic AI pipeline for lawyers and investment advisors, and I spent a summer at Amazon Web Services automating firmware vulnerability analysis across BIOS, BMC, and GPU platforms.</p>
         <p>I studied Computer Engineering at Georgia Tech, specializing in cybersecurity and digital signal processing, after earning a Computer Science degree at Emory.</p>
       </div>
     </section>
 
-    <section class="block" id="experience" aria-labelledby="exp-h">
-      <div class="block-head">
-        <h2 id="exp-h">Experience</h2>
-        <ol class="jump" aria-label="Roles">
-          <li><a href="#job-microsoft">Microsoft</a></li>
-          <li><a href="#job-startup">Stealth AI Startup</a></li>
-          <li><a href="#job-aws">Amazon Web Services</a></li>
-          <li><a href="#job-honeypot">Honeypot Technologies</a></li>
-          <li><a href="#job-gt">Georgia Tech research</a></li>
-          <li><a href="#job-emory">Emory research</a></li>
-        </ol>
-      </div>
-      <div class="block-body">
+    <div id="scenes">
+      <h2 class="visually-hidden">Experience</h2>
 
-        <article class="job" id="job-microsoft">
-          <header class="job-head">
-            <h3>Software Engineer, Azure Security</h3>
-            <p class="org">Microsoft</p>
-            <p class="when"><time datetime="2025-12">Dec 2025</time> – Present</p>
-          </header>
-        </article>
+      <section class="scene scene-quiet" id="job-microsoft" data-scene="01" data-scene-name="Microsoft, now">
+        <p class="slate"><span>Scene 01</span><span>Dec 2025 – Present</span></p>
+        <div class="scene-card">
+          <h3>Software Engineer, Azure Security</h3>
+          <p class="org">Microsoft</p>
+          <p class="now">Now showing</p>
+        </div>
+      </section>
 
-        <article class="job" id="job-startup">
-          <header class="job-head">
+      <section class="scene" id="job-startup" data-scene="02" data-scene-name="Stealth AI Startup, 2025">
+        <p class="slate"><span>Scene 02</span><span>Oct – Dec 2025</span></p>
+        <figure class="footage">
+          <canvas data-film="fsm" aria-hidden="true"></canvas>
+          <figcaption>An FSM walking a request from intent to a single output state, recreated in code</figcaption>
+        </figure>
+        <div class="scene-body">
+          <div class="scene-card">
             <h3>Founding Engineer</h3>
             <p class="org">Stealth AI Startup, Salt Lake City, UT</p>
-            <p class="when"><time datetime="2025-10">Oct</time> – <time datetime="2025-12">Dec 2025</time></p>
-          </header>
-          <ul>
+          </div>
+          <ul class="credits">
             <li>Sole founding engineer, working under the CTO, building a secure, deterministic AI pipeline for lawyers and Registered Investment Advisors (RIAs), professionals who face fines for AI-generated hallucinations.</li>
             <li>Designed and built the company's proprietary architecture that pairs on-premises small language models (SLMs), fine-tuned on each client's own data, with finite state machines (FSMs) for intent clarification. Because context is everything in AI, each FSM walks the user through structured questions to establish exactly what they need before the model acts.</li>
             <li>Built a dedicated FSM for each client use case (e.g., portfolio analysis), with states defined as Pydantic models, so the model makes the decisions while the FSM guarantees a single, predictable output state. Given the same intent-clarification answers, the system produced the same output 99% of the time.</li>
@@ -92,176 +105,196 @@
             <li>Prototyped Petri nets to model and enforce which tools each use case may access (web search, database queries, and other actions).</li>
             <li>Demoed the system to a client, who responded strongly to its deterministic, auditable output.</li>
           </ul>
-        </article>
+        </div>
+      </section>
 
-        <article class="job" id="job-aws">
-          <header class="job-head">
+      <section class="scene" id="job-aws" data-scene="03" data-scene-name="Amazon Web Services, 2025">
+        <p class="slate"><span>Scene 03</span><span>Jun – Aug 2025</span></p>
+        <figure class="footage">
+          <canvas data-film="scans" aria-hidden="true"></canvas>
+          <figcaption>One hundred firmware scans running side by side, recreated in code</figcaption>
+        </figure>
+        <div class="scene-body">
+          <div class="scene-card">
             <h3>Security Engineer Intern, Application Security</h3>
             <p class="org">Amazon Web Services, San Diego, CA</p>
-            <p class="when"><time datetime="2025-06">Jun</time> – <time datetime="2025-08">Aug 2025</time></p>
-          </header>
-          <ul>
+          </div>
+          <ul class="credits">
             <li>Performed static analysis with custom YARA rules and detection scripts to audit BMC firmware across 1.5M+ hosts, flagging weak MD5 hashing, misconfigured init-file permissions that could let attackers persist across reboots, and insecure practices in bundled open-source libraries; reported findings to owning teams for remediation.</li>
             <li>Automated firmware vulnerability analysis for embedded Linux platforms (BIOS, BMC, GPU) using EMBA, combining static analysis (Binwalk extraction, YARA rules) with dynamic analysis (QEMU emulation, fuzzing), scanning 200+ firmware images.</li>
             <li>Built a parallel scanning pipeline on ECS Fargate, provisioned with CloudFormation inside private VPCs and orchestrated by Jenkins, running 100 firmware scans concurrently and cutting batch time from ~300 hours to ~3 hours.</li>
             <li>Designed a firmware-type-aware prioritization framework with custom severity thresholds, ranking vulnerabilities by platform risk (BMC vs. BIOS vs. GPU); Amazon's Secure Hardware and Foundational Technologies (SHAFT) team used it to decide which vulnerabilities to fix first.</li>
             <li>My scanner, pipeline, and prioritization framework were packaged into an internal software tool that is now used by multiple teams across Amazon and actively maintained and extended by a dedicated software team.</li>
           </ul>
-        </article>
+        </div>
+      </section>
 
-        <article class="job" id="job-honeypot">
-          <header class="job-head">
+      <section class="scene" id="job-honeypot" data-scene="04" data-scene-name="Honeypot Technologies, 2024–25">
+        <p class="slate"><span>Scene 04</span><span>May 2024 – Apr 2025</span></p>
+        <figure class="footage">
+          <canvas data-film="traffic" aria-hidden="true"></canvas>
+          <figcaption>Website traffic with flagged visitors held at the edge, recreated in code</figcaption>
+        </figure>
+        <div class="scene-body">
+          <div class="scene-card">
             <h3>Security Engineering Intern</h3>
             <p class="org">Honeypot Technologies, Atlanta, GA</p>
-            <p class="when"><time datetime="2024-05">May 2024</time> – <time datetime="2025-04">Apr 2025</time></p>
-          </header>
-          <h4 class="term"><time datetime="2024-09">Sep 2024</time> – <time datetime="2025-04">Apr 2025</time></h4>
-          <ul>
-            <li>Extended the threat analytics platform to detect and mitigate bots, anonymized traffic, VPN users, and other malicious behavior on client websites, flagging more than 100,000 users; contributed to a patent-pending cookieless “handprint” tool that tracks malicious users across devices and networks.</li>
-            <li>Used TypeScript on Cloudflare Workers to run code close to end users and proactively apply countermeasures, improving response time to malicious activity by 70%.</li>
-            <li>Built front-end features in Vue.js and TypeScript on top of Python back-end services, and implemented AES-256 encryption for customer and session data stored in cookies.</li>
-          </ul>
-          <h4 class="term"><time datetime="2024-05">May</time> – <time datetime="2024-08">Aug 2024</time></h4>
-          <ul>
-            <li>Deployed decoy services (honeytokens) with OpenCanary that mimic live services to attract attackers scanning for open ports, capturing detailed attack telemetry for early-stage detection in incident response.</li>
-            <li>Wrote a Go command-line tool that automates deploying honeypot VMs with honeytokens on AWS and securely reports attacker data and targeted ports to a central server for real-time monitoring.</li>
-            <li>Used AWS KMS to generate RSA key pairs and sign SaaS license data with SHA-256, securing communication between the client and server and validating the license each time the tool runs.</li>
-          </ul>
-        </article>
+          </div>
+          <div class="credits-group">
+            <h4 class="term">Sep 2024 – Apr 2025</h4>
+            <ul class="credits">
+              <li>Extended the threat analytics platform to detect and mitigate bots, anonymized traffic, VPN users, and other malicious behavior on client websites, flagging more than 100,000 users; contributed to a patent-pending cookieless “handprint” tool that tracks malicious users across devices and networks.</li>
+              <li>Used TypeScript on Cloudflare Workers to run code close to end users and proactively apply countermeasures, improving response time to malicious activity by 70%.</li>
+              <li>Built front-end features in Vue.js and TypeScript on top of Python back-end services, and implemented AES-256 encryption for customer and session data stored in cookies.</li>
+            </ul>
+            <h4 class="term">May – Aug 2024</h4>
+            <ul class="credits">
+              <li>Deployed decoy services (honeytokens) with OpenCanary that mimic live services to attract attackers scanning for open ports, capturing detailed attack telemetry for early-stage detection in incident response.</li>
+              <li>Wrote a Go command-line tool that automates deploying honeypot VMs with honeytokens on AWS and securely reports attacker data and targeted ports to a central server for real-time monitoring.</li>
+              <li>Used AWS KMS to generate RSA key pairs and sign SaaS license data with SHA-256, securing communication between the client and server and validating the license each time the tool runs.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
-        <article class="job" id="job-gt">
-          <header class="job-head">
+      <section class="scene" id="job-gt" data-scene="05" data-scene-name="Cyberphysical Systems Lab, 2023">
+        <p class="slate"><span>Scene 05</span><span>Aug – Dec 2023</span></p>
+        <figure class="footage">
+          <canvas data-film="robot" aria-hidden="true"></canvas>
+          <figcaption>A robot following commands across a grid, recreated in code</figcaption>
+        </figure>
+        <div class="scene-body">
+          <div class="scene-card">
             <h3>Research Team Leader</h3>
             <p class="org">Cyberphysical Systems Lab, Georgia Tech, Atlanta, GA</p>
-            <p class="when"><time datetime="2023-08">Aug</time> – <time datetime="2023-12">Dec 2023</time></p>
-          </header>
-          <ul>
+          </div>
+          <ul class="credits">
             <li>Led a research team integrating the Robot Operating System (ROS) with HELICS, improving simulation accuracy 10x by capturing both robotic and energy-system dynamics.</li>
             <li>Worked with GTRI researchers in Agile sprints, implementing C++ algorithms that replicate robot sensor environments and improving accuracy benchmarks by 50%.</li>
             <li>Planned and assigned work in Jira around each member's strengths, ran team meetings, and documented results in an IEEE-format research paper.</li>
           </ul>
-        </article>
+        </div>
+      </section>
 
-        <article class="job" id="job-emory">
-          <header class="job-head">
+      <section class="scene" id="job-emory" data-scene="06" data-scene-name="Perception and Action Lab, 2022–23">
+        <p class="slate"><span>Scene 06</span><span>Aug 2022 – Mar 2023</span></p>
+        <figure class="footage">
+          <canvas data-film="fit" aria-hidden="true"></canvas>
+          <figcaption>Fitting a distribution to decision data, recreated in code</figcaption>
+        </figure>
+        <div class="scene-body">
+          <div class="scene-card">
             <h3>Research Assistant</h3>
             <p class="org">Perception and Action Lab, Emory University, Atlanta, GA</p>
-            <p class="when"><time datetime="2022-08">Aug 2022</time> – <time datetime="2023-03">Mar 2023</time></p>
-          </header>
-          <ul>
+          </div>
+          <ul class="credits">
             <li>Modeled decision data from mice, tested its statistical significance, and generated synthetic data in Python for analysis.</li>
             <li>Identified the statistical distribution that best fit the data, then cleaned and pre-processed it as input for a neural network.</li>
           </ul>
-        </article>
+        </div>
+      </section>
+    </div>
 
-      </div>
-    </section>
-
-    <section class="block" id="projects" aria-labelledby="proj-h">
-      <h2 id="proj-h">Projects</h2>
-      <div class="block-body">
-        <ul class="projects">
-          <li>
+    <section class="projects" id="projects" data-scene="07" data-scene-name="Projects" aria-labelledby="proj-h">
+      <h2 class="section-title" id="proj-h">Projects</h2>
+      <ul class="reels">
+        <li class="reel">
+          <canvas data-film="life" aria-hidden="true"></canvas>
+          <div>
             <h3><a href="https://github.com/rvasa01/Game-of-Life-using-CUDA" target="_blank" rel="noopener">Game of Life on the GPU with CUDA</a></h3>
             <p>Conway's Game of Life running in parallel on the GPU, comparing how normal, pinned, and managed CUDA memory affect simulation speed.</p>
             <p class="tags">CUDA, C++</p>
-          </li>
-          <li>
+          </div>
+        </li>
+        <li class="reel">
+          <canvas data-film="threads" aria-hidden="true"></canvas>
+          <div>
             <h3><a href="https://github.com/rvasa01/Game-of-Life-Multithreading-and-OpenMP" target="_blank" rel="noopener">Game of Life with threads and OpenMP</a></h3>
             <p>The same cellular automaton parallelized on the CPU, using std::thread and OpenMP to split a computationally heavy grid across cores.</p>
             <p class="tags">C++, OpenMP</p>
-          </li>
-          <li>
+          </div>
+        </li>
+        <li class="reel">
+          <canvas data-film="robot" aria-hidden="true"></canvas>
+          <div>
             <h3><a href="https://github.com/rvasa01/Robot-Movement-Simulation-UDP-Socket-Programming" target="_blank" rel="noopener">Robot movement over UDP sockets</a></h3>
             <p>A client sends motion commands over UDP; the server moves a robot across a 2D grid and renders it with SFML.</p>
             <p class="tags">C++, UDP sockets, SFML</p>
-          </li>
-          <li>
+          </div>
+        </li>
+        <li class="reel">
+          <img src="assets/img/reel/centipede.jpg" alt="Screenshot of the Centipede game's start screen" loading="lazy" class="still still-centipede">
+          <div>
             <h3><a href="https://github.com/rvasa01/Retro-Centipede-Arcade-Game-SFML" target="_blank" rel="noopener">Centipede arcade game</a></h3>
             <p>A simplified take on the classic arcade game, built with SFML 2D graphics and a class-based C++ design.</p>
             <p class="tags">C++, SFML</p>
-          </li>
-          <li>
+          </div>
+        </li>
+        <li class="reel">
+          <img src="assets/img/reel/netpbm.jpg" alt="Sample PBM, PGM, and PPM files shown as text" loading="lazy" class="still still-netpbm">
+          <div>
             <h3><a href="https://github.com/rvasa01/Converting-between-PBM-PGM-and-PPM-images" target="_blank" rel="noopener">Converting between PBM, PGM, and PPM images</a></h3>
             <p>A C command-line tool that converts between the three Netpbm formats by operating on pixels in dynamically allocated 2D arrays.</p>
             <p class="tags">C</p>
-          </li>
-        </ul>
-        <p class="more"><a href="https://github.com/rvasa01?tab=repositories" target="_blank" rel="noopener">More on GitHub</a></p>
-      </div>
+          </div>
+        </li>
+      </ul>
+      <p class="more"><a class="link" href="https://github.com/rvasa01?tab=repositories" target="_blank" rel="noopener">More on GitHub</a></p>
     </section>
 
-    <section class="block" id="education" aria-labelledby="edu-h">
-      <h2 id="edu-h">Education</h2>
-      <div class="block-body">
-        <article class="school">
-          <header class="job-head">
-            <h3>Georgia Institute of Technology</h3>
-            <p class="org">B.S. Computer Engineering, minor in Artificial Intelligence</p>
-            <p class="when"><time datetime="2023-08">Aug 2023</time> – <time datetime="2025-05">May 2025</time></p>
-          </header>
-          <dl>
-            <dt>Specialization</dt>
-            <dd>Cybersecurity and digital signal processing</dd>
-            <dt>Coursework</dt>
-            <dd>Intro to Malware Reverse Engineering, Intro to Computer Security, Internetwork Security, Computer Communications, Programming for Hardware and Software Systems, Advanced Programming Techniques for Engineering Applications, Fundamentals of Machine Learning, Optimization of Information Systems, Physical Foundations of Computer Engineering</dd>
-            <dt>Research</dt>
-            <dd>Cyberphysical Systems Lab (Dr. William Stuckey, Dr. Samuel Litchfield); Cyber Forensics Innovation Laboratory (Dr. Brendan Saltaformaggio)</dd>
-          </dl>
-        </article>
-        <article class="school">
-          <header class="job-head">
-            <h3>Emory University</h3>
-            <p class="org">B.A. Computer Science, minor in Physics</p>
-            <p class="when"><time datetime="2020-08">Aug 2020</time> – <time datetime="2023-05">May 2023</time></p>
-          </header>
-          <dl>
-            <dt>Coursework</dt>
-            <dd>Data Structures and Algorithms, Foundations of Computer Science, Systems Programming, Advanced Computer Architecture, Database Systems</dd>
-            <dt>Research</dt>
-            <dd>Perception and Action Lab (Dr. Chris Rodgers)</dd>
-          </dl>
-        </article>
-      </div>
+    <section class="end-credits" id="credits" data-scene="08" data-scene-name="Education" aria-labelledby="credits-h">
+      <h2 class="section-title" id="credits-h">Education</h2>
+      <dl class="roll roll-edu">
+        <dt>Georgia Institute of Technology</dt>
+        <dd><strong>B.S. Computer Engineering, minor in Artificial Intelligence</strong><span>Aug 2023 – May 2025</span></dd>
+        <dt>Specialization</dt>
+        <dd>Cybersecurity and digital signal processing</dd>
+        <dt>Coursework</dt>
+        <dd>Intro to Malware Reverse Engineering, Intro to Computer Security, Internetwork Security, Computer Communications, Programming for Hardware and Software Systems, Advanced Programming Techniques for Engineering Applications, Fundamentals of Machine Learning, Optimization of Information Systems, Physical Foundations of Computer Engineering</dd>
+        <dt>Research</dt>
+        <dd>Cyberphysical Systems Lab (Dr. William Stuckey, Dr. Samuel Litchfield); Cyber Forensics Innovation Laboratory (Dr. Brendan Saltaformaggio)</dd>
+      </dl>
+      <dl class="roll roll-edu">
+        <dt>Emory University</dt>
+        <dd><strong>B.A. Computer Science, minor in Physics</strong><span>Aug 2020 – May 2023</span></dd>
+        <dt>Coursework</dt>
+        <dd>Data Structures and Algorithms, Foundations of Computer Science, Systems Programming, Advanced Computer Architecture, Database Systems</dd>
+        <dt>Research</dt>
+        <dd>Perception and Action Lab (Dr. Chris Rodgers)</dd>
+      </dl>
+
+      <h2 class="section-title" id="skills">Skills</h2>
+      <dl class="roll">
+        <dt>Languages</dt>
+        <dd>Python, C, C++, Go, TypeScript, JavaScript, Java, C#, MATLAB, x86 assembly, SQL (PostgreSQL)</dd>
+        <dt>Security</dt>
+        <dd>Reverse engineering, firmware analysis, malware analysis, network security; IDA Pro, Ghidra, YARA, EMBA, Binwalk, QEMU, Metasploit, Snort, Nmap, Wireshark, OpenCanary, OpenSSL</dd>
+        <dt>Cloud</dt>
+        <dd>AWS (ECS Fargate, ECR, CloudFormation, KMS, VPC), Docker, Jenkins, Cloudflare Workers</dd>
+        <dt>AI systems</dt>
+        <dd>Small language models, fine-tuning, retrieval-augmented generation, finite state machines, Petri nets, Pydantic</dd>
+        <dt>Other</dt>
+        <dd>Vue.js, ROS, HELICS, OpenGL, SFML, CUDA, OpenMP</dd>
+      </dl>
     </section>
 
-    <section class="block" id="skills" aria-labelledby="skills-h">
-      <h2 id="skills-h">Skills</h2>
-      <div class="block-body">
-        <dl class="skills">
-          <dt>Languages</dt>
-          <dd>Python, C, C++, Go, TypeScript, JavaScript, Java, C#, MATLAB, x86 assembly, SQL (PostgreSQL)</dd>
-          <dt>Security</dt>
-          <dd>Reverse engineering, firmware analysis, malware analysis, network security; IDA Pro, Ghidra, YARA, EMBA, Binwalk, QEMU, Metasploit, Snort, Nmap, Wireshark, OpenCanary, OpenSSL</dd>
-          <dt>Cloud</dt>
-          <dd>AWS (ECS Fargate, ECR, CloudFormation, KMS, VPC), Docker, Jenkins, Cloudflare Workers</dd>
-          <dt>AI systems</dt>
-          <dd>Small language models, fine-tuning, retrieval-augmented generation, finite state machines, Petri nets, Pydantic</dd>
-          <dt>Other</dt>
-          <dd>Vue.js, ROS, HELICS, OpenGL, SFML, CUDA, OpenMP</dd>
-        </dl>
-      </div>
-    </section>
-
-    <section class="block" id="contact" aria-labelledby="contact-h">
-      <h2 id="contact-h">Contact</h2>
-      <div class="block-body">
-        <p class="contact-lede">The fastest way to reach me is email. I'm also happy to connect on LinkedIn.</p>
-        <ul class="contact-list">
-          <li><span>Email</span> <a href="mailto:rahilhardikvasa@gmail.com">rahilhardikvasa@gmail.com</a></li>
-          <li><span>LinkedIn</span> <a href="https://www.linkedin.com/in/rahil-vasa-8b364a115/" target="_blank" rel="noopener">rahil-vasa</a></li>
-          <li><span>GitHub</span> <a href="https://github.com/rvasa01" target="_blank" rel="noopener">rvasa01</a></li>
-        </ul>
-        <details class="form">
-          <summary>Open the contact form</summary>
-          <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf2dk-m7gaJyb8O2DrcvJU0qQqn3kMou1SdYu0AEhybhe33ww/viewform?embedded=true" title="Contact form" loading="lazy">Loading…</iframe>
-        </details>
-      </div>
+    <section class="closing" id="contact" data-scene="09" data-scene-name="Contact" aria-labelledby="contact-h">
+      <h2 id="contact-h">Let's talk.</h2>
+      <p>The fastest way to reach me is email. I'm also happy to connect on LinkedIn.</p>
+      <p class="closing-actions">
+        <a class="btn" href="mailto:rahilhardikvasa@gmail.com">rahilhardikvasa@gmail.com</a>
+        <a class="link" href="https://www.linkedin.com/in/rahil-vasa-8b364a115/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="link" href="https://github.com/rvasa01" target="_blank" rel="noopener">GitHub</a>
+      </p>
+      <details class="form">
+        <summary>Open the contact form</summary>
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf2dk-m7gaJyb8O2DrcvJU0qQqn3kMou1SdYu0AEhybhe33ww/viewform?embedded=true" title="Contact form" loading="lazy">Loading…</iframe>
+      </details>
+      <footer class="footer">
+        <p>© 2026 Rahil Vasa</p>
+        <p>Early layout adapted from <a href="https://github.com/RyanFitzgerald/devportfolio" target="_blank" rel="noopener">devportfolio</a> (MIT)</p>
+      </footer>
     </section>
   </main>
-
-  <footer class="footer">
-    <p>© 2026 Rahil Vasa. Layout adapted from <a href="https://github.com/RyanFitzgerald/devportfolio" target="_blank" rel="noopener">devportfolio</a> (MIT).</p>
-  </footer>
 </body>
 </html>
