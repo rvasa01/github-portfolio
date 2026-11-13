@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Rahil Vasa</title>
   <meta name="description" content="Rahil Vasa is a software engineer on Microsoft's Azure Security team. Previously: firmware security at AWS, founding engineer at a stealth AI startup, and threat detection at Honeypot Technologies.">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#0a0a0a">
   <meta property="og:title" content="Rahil Vasa">
   <meta property="og:description" content="Software engineer, Azure Security at Microsoft.">
   <meta property="og:image" content="https://rvasa01.github.io/github-portfolio/assets/img/profile-picture-rahil.jpg">
@@ -14,21 +14,11 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..900&family=Hanken+Grotesk:wght@400..700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..500&family=Schibsted+Grotesk:wght@400..600&family=Fragment+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/site.css">
   <script src="assets/js/site.js" defer></script>
 </head>
 <body>
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-    <filter id="steel" color-interpolation-filters="sRGB">
-      <feColorMatrix type="saturate" values="0"/>
-      <feComponentTransfer>
-        <feFuncR type="table" tableValues="0 0.56"/>
-        <feFuncG type="table" tableValues="0 0.70"/>
-        <feFuncB type="table" tableValues="0 0.80"/>
-      </feComponentTransfer>
-    </filter>
-  </svg>
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="bar bar-top">
@@ -112,7 +102,7 @@
         <figure class="footage" data-summary="A finite state machine asks one question per state, then lands on a single output.">
           <figcaption class="visually-hidden">A finite state machine asks one question per state, then lands on a single output.</figcaption>
           <canvas data-film="fsm" aria-hidden="true"></canvas>
-          <p class="subtitle" aria-hidden="true"></p>
+          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Intent</strong><span class="d">Every request starts here. The machine asks one question: what do you need?</span></button></li><li><button type="button"><span class="n">02</span><strong>Account</strong><span class="d">The next clock tick moves it to Account. It can&#x27;t advance until the user answers.</span></button></li><li><button type="button"><span class="n">03</span><strong>Horizon</strong><span class="d">Each answer narrows the context, so the model never has to guess what was meant.</span></button></li><li><button type="button"><span class="n">04</span><strong>Risk</strong><span class="d">The last question for this use case. Each state is defined as a Pydantic model.</span></button></li><li><button type="button"><span class="n">05</span><strong>Output</strong><span class="d">Every state is answered, so the model produces one report. Same answers gave the same output 99% of the time.</span></button></li></ol>
         </figure>
         <div class="scene-body">
           <div class="scene-card">
@@ -136,7 +126,7 @@
         <figure class="footage" data-summary="Firmware images in S3 are scanned by 100 parallel ECS Fargate tasks running EMBA from ECR inside a private VPC, and findings are ranked by platform.">
           <figcaption class="visually-hidden">Firmware images in S3 are scanned by 100 parallel ECS Fargate tasks running EMBA from ECR inside a private VPC, and findings are ranked by platform.</figcaption>
           <canvas data-film="aws" aria-hidden="true"></canvas>
-          <p class="subtitle" aria-hidden="true"></p>
+          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Store</strong><span class="d">200+ firmware images for BMC, BIOS, and GPU platforms sit in an S3 bucket.</span></button></li><li><button type="button"><span class="n">02</span><strong>Provision</strong><span class="d">CloudFormation stands up 100 ECS Fargate tasks in a private VPC. Each pulls the EMBA scanner image from ECR.</span></button></li><li><button type="button"><span class="n">03</span><strong>Scan</strong><span class="d">Each task runs EMBA on one image: static analysis (Binwalk, YARA), then dynamic (QEMU emulation, fuzzing). 100 at once cut a batch from ~300 hours to ~3.</span></button></li><li><button type="button"><span class="n">04</span><strong>Prioritize</strong><span class="d">Findings are ranked against custom severity thresholds by platform risk. Amazon&#x27;s SHAFT team used the ranking to decide what to fix first.</span></button></li></ol>
         </figure>
         <div class="scene-body">
           <div class="scene-card">
@@ -155,10 +145,10 @@
 
       <article class="scene" id="job-honeypot" data-label="Honeypot Technologies">
         <p class="dates">May 2024 – Apr 2025</p>
-        <figure class="footage" data-summary="Attackers scan the network; probes that pass the firewall hit decoy honeypots, which report telemetry to the monitoring server.">
-          <figcaption class="visually-hidden">Attackers scan the network; probes that pass the firewall hit decoy honeypots, which report telemetry to the monitoring server.</figcaption>
+        <figure class="footage" data-summary="Attackers scan the network; probes that pass the firewall land on honeypots, which report each attack to a central monitoring server.">
+          <figcaption class="visually-hidden">Attackers scan the network; probes that pass the firewall land on honeypots, which report each attack to a central monitoring server.</figcaption>
           <canvas data-film="honeypot" aria-hidden="true"></canvas>
-          <p class="subtitle" aria-hidden="true"></p>
+          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Scan</strong><span class="d">Attackers sweep the internet for open ports. The firewall drops most probes.</span></button></li><li><button type="button"><span class="n">02</span><strong>Lure</strong><span class="d">Every host on this network is a honeypot. OpenCanary makes each one pose as a live service: SSH, RDP, a web server, a database.</span></button></li><li><button type="button"><span class="n">03</span><strong>Log</strong><span class="d">Each honeypot records the attacker&#x27;s IP and the port it hit, and reports it to the central server.</span></button></li><li><button type="button"><span class="n">04</span><strong>Monitor</strong><span class="d">The central server shows attacks as they happen, giving early warning for incident response.</span></button></li></ol>
         </figure>
         <div class="scene-body">
           <div class="scene-card">
@@ -191,7 +181,7 @@
         <figure class="footage" data-summary="A grid energy simulation exchanges data with ROS through HELICS, and the energy data drives how a line robot moves along the power lines.">
           <figcaption class="visually-hidden">A grid energy simulation exchanges data with ROS through HELICS, and the energy data drives how a line robot moves along the power lines.</figcaption>
           <canvas data-film="gridbot" aria-hidden="true"></canvas>
-          <p class="subtitle" aria-hidden="true"></p>
+          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Grid simulation</strong><span class="d">A power grid simulation, built with the Pacific Northwest National Laboratory (PNNL), produces energy data for the lines.</span></button></li><li><button type="button"><span class="n">02</span><strong>HELICS</strong><span class="d">HELICS co-simulation exchanges that energy data with ROS, keeping the grid and the robot in sync.</span></button></li><li><button type="button"><span class="n">03</span><strong>ROS</strong><span class="d">ROS turns the energy data into motion commands for the line robot.</span></button></li><li><button type="button"><span class="n">04</span><strong>Line robot</strong><span class="d">The robot moves along the line in response. Capturing both sides together made the simulation 10x more accurate.</span></button></li></ol>
         </figure>
         <div class="scene-body">
           <div class="scene-card">
@@ -211,7 +201,7 @@
         <figure class="footage" data-summary="Decision data fills a histogram, then a normal curve is fitted over it.">
           <figcaption class="visually-hidden">Decision data fills a histogram, then a normal curve is fitted over it.</figcaption>
           <canvas data-film="fit" aria-hidden="true"></canvas>
-          <p class="subtitle" aria-hidden="true"></p>
+          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Collect</strong><span class="d">Decision data from mice, plus synthetic data generated in Python, fills the histogram.</span></button></li><li><button type="button"><span class="n">02</span><strong>Fit</strong><span class="d">The statistical distribution that best fits the data is found and drawn over it.</span></button></li><li><button type="button"><span class="n">03</span><strong>Prepare</strong><span class="d">The data is cleaned and pre-processed as input for a neural network.</span></button></li></ol>
         </figure>
         <div class="scene-body">
           <div class="scene-card">
@@ -232,8 +222,8 @@
         <li class="reel">
           <figure data-summary="The Game of Life grid updating every generation.">
           <figcaption class="visually-hidden">The Game of Life grid updating every generation.</figcaption>
-            <canvas data-film="life" aria-hidden="true"></canvas>
-            <p class="subtitle" aria-hidden="true"></p>
+            <canvas data-film="cuda" aria-hidden="true"></canvas>
+            <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Copy to GPU</strong><span class="d">The grid moves to GPU memory using one of three types: normal, pinned, or managed.</span></button></li><li><button type="button"><span class="n">02</span><strong>Run the kernel</strong><span class="d">GPU threads, in blocks of a multiple of 32, apply the rules to every cell in parallel.</span></button></li><li><button type="button"><span class="n">03</span><strong>Time it</strong><span class="d">The program times the last 100 generations, so the three memory types can be compared.</span></button></li></ol>
           </figure>
           <div>
             <h3><a href="https://github.com/rvasa01/Game-of-Life-using-CUDA" target="_blank" rel="noopener">Game of Life on the GPU with CUDA</a></h3>
@@ -245,7 +235,7 @@
           <figure data-summary="The grid split into four strips, one per thread.">
           <figcaption class="visually-hidden">The grid split into four strips, one per thread.</figcaption>
             <canvas data-film="threads" aria-hidden="true"></canvas>
-            <p class="subtitle" aria-hidden="true"></p>
+            <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Split</strong><span class="d">The grid is divided into strips, one per thread.</span></button></li><li><button type="button"><span class="n">02</span><strong>Compute</strong><span class="d">Every thread applies the rules to its own strip at the same time, with std::thread or OpenMP.</span></button></li><li><button type="button"><span class="n">03</span><strong>Time it</strong><span class="d">Each run times the last 100 generations: sequential vs. threads vs. OpenMP.</span></button></li></ol>
           </figure>
           <div>
             <h3><a href="https://github.com/rvasa01/Game-of-Life-Multithreading-and-OpenMP" target="_blank" rel="noopener">Game of Life with threads and OpenMP</a></h3>
@@ -254,10 +244,10 @@
           </div>
         </li>
         <li class="reel">
-          <figure data-summary="A client sends move commands over UDP and the server moves the robot on a grid.">
-          <figcaption class="visually-hidden">A client sends move commands over UDP and the server moves the robot on a grid.</figcaption>
+          <figure data-summary="A client sends key presses over UDP; the server changes the robot's direction or speed and redraws it on a grid.">
+          <figcaption class="visually-hidden">A client sends key presses over UDP; the server changes the robot's direction or speed and redraws it on a grid.</figcaption>
             <canvas data-film="robot" aria-hidden="true"></canvas>
-            <p class="subtitle" aria-hidden="true"></p>
+            <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Key press</strong><span class="d">The client reads a key: w, a, s, or d sets a direction; g and h change speed.</span></button></li><li><button type="button"><span class="n">02</span><strong>UDP packet</strong><span class="d">The key is sent as a single UDP datagram. No connection or handshake, so it arrives fast.</span></button></li><li><button type="button"><span class="n">03</span><strong>Server</strong><span class="d">The server listens on its port, receives the packet, and updates the robot&#x27;s direction or speed.</span></button></li><li><button type="button"><span class="n">04</span><strong>Render</strong><span class="d">SFML redraws the robot on a 2D grid in an 800×600 window. Pressing q disconnects, and the robot disappears.</span></button></li></ol>
           </figure>
           <div>
             <h3><a href="https://github.com/rvasa01/Robot-Movement-Simulation-UDP-Socket-Programming" target="_blank" rel="noopener">Robot movement over UDP sockets</a></h3>
