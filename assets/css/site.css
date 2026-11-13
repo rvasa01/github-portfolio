@@ -118,9 +118,9 @@ main { padding: var(--bar) 0; }
   line-height: 0.88;
   letter-spacing: -0.025em;
 }
-/* Logo strip under the name: one color so it sits in the palette */
+/* Logo strip under the name, in brand colors (dark-background versions) */
 .marks { list-style: none; margin: 36px 0 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 18px 40px; }
-.marks img { display: block; width: auto; filter: brightness(0) invert(0.9); opacity: 0.8; }
+.marks img { display: block; width: auto; }
 .mark-ms { height: 22px; }
 .mark-aws { height: 30px; margin-top: 6px; }
 .mark-gt { height: 30px; }
