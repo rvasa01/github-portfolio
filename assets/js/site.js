@@ -186,81 +186,114 @@
     cuda(canvas) { return films.life(canvas, { mode: "cuda" }); },
     threads(canvas) { return films.life(canvas, { mode: "threads" }); },
 
-    // ---------- Deterministic FSM with a clock ----------
+    // ---------- FSM: each circle is a state; answers pick the branch ----------
     fsm(canvas) {
-      const S = [
-        { name: "Intent", q: "What do you need?", a: "Analyze a client's portfolio" },
-        { name: "Account", q: "Which account?", a: "Taxable equity account" },
-        { name: "Horizon", q: "Over what time horizon?", a: "5 years" },
-        { name: "Risk", q: "What risk tolerance?", a: "Moderate" },
-        { name: "Output", q: "Generate the report?", a: "Yes" },
+      const STAGES = [
+        { name: "Intent", q: "What do you need?", opts: ["Portfolio analysis"] },
+        { name: "Account", q: "Which account?", opts: ["Taxable", "Retirement", "Trust"] },
+        { name: "Horizon", q: "Over what time horizon?", opts: ["Under 3 yrs", "3–7 yrs", "7+ yrs"] },
+        { name: "Risk", q: "What risk tolerance?", opts: ["Conservative", "Moderate", "Aggressive"] },
+        { name: "Output", q: "", opts: ["Report"] },
       ];
-      const STEP = 150, HOLD = 110, CYCLE = S.length * STEP + HOLD;
+      // Each loop answers differently, so a different route lights up.
+      const RUNS = [[0, 0, 1, 1, 0], [0, 1, 2, 2, 0], [0, 2, 0, 0, 0]];
+      const STEP = 150, HOLD = 110, N = STAGES.length, CYCLE = N * STEP + HOLD;
       let t = 0;
       const where = () => {
-        const c = t % CYCLE;
-        if (c >= S.length * STEP) return { i: S.length - 1, p: 1, done: true };
-        return { i: Math.floor(c / STEP), p: (c % STEP) / STEP, done: false };
+        const c = t % CYCLE, run = RUNS[Math.floor(t / CYCLE) % RUNS.length];
+        if (c >= N * STEP) return { i: N - 1, p: 1, done: true, run };
+        return { i: Math.floor(c / STEP), p: (c % STEP) / STEP, done: false, run };
       };
       return {
-        tick: 33, still: S.length * STEP + 10, steps: S.length,
+        tick: 33, still: 3 * STEP + 120, steps: N,
         step: () => where().i,
-        seek(k) { t = k * STEP + 1; },
+        seek(k) { t = Math.floor(t / CYCLE) * CYCLE + k * STEP + 1; },
         draw() {
           const { ctx, w, h } = fit(canvas);
-          const { i, p, done } = where();
-          const n = S.length, f = fs(w, 15), m = clamp(w * 0.03, 14, 32), narrow = w < 560;
-          text(ctx, "Use case: portfolio analysis", m, m + f, { size: f + 1 });
-          text(ctx, "one question per state", m, m + f * 2 + 8, { mono: true, size: 11, color: C.dim });
+          const { i, p, done, run } = where();
+          const f = fs(w, 15), m = clamp(w * 0.03, 12, 32), narrow = w < 560;
 
           // clock
-          const cr = clamp(h * 0.075, 16, 30), cx = w - m - cr, cy = m + cr;
+          const cr = clamp(h * 0.065, 14, 28), cx = w - m - cr, cy = m + cr;
           ctx.beginPath(); ctx.arc(cx, cy, cr, 0, Math.PI * 2); ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.stroke();
-          for (let k = 0; k < n; k++) {
-            const a = -Math.PI / 2 + (k / n) * Math.PI * 2;
+          for (let k = 0; k < N; k++) {
+            const a = -Math.PI / 2 + (k / N) * Math.PI * 2;
             line(ctx, [[cx + Math.cos(a) * (cr - 6), cy + Math.sin(a) * (cr - 6)], [cx + Math.cos(a) * cr, cy + Math.sin(a) * cr]], k <= i ? C.ink : C.line, 1.5);
           }
-          const ha = -Math.PI / 2 + ((i + (done ? 1 : p)) / n) * Math.PI * 2;
+          const ha = -Math.PI / 2 + ((i + (done ? 1 : p)) / N) * Math.PI * 2;
           line(ctx, [[cx, cy], [cx + Math.cos(ha) * (cr - 8), cy + Math.sin(ha) * (cr - 8)]], C.red, 1.5);
-          if (!narrow) text(ctx, `tick ${done ? n : i + 1} / ${n}`, cx - cr - 12, cy + 4, { mono: true, size: 11, align: "right", color: C.dim });
+          if (!narrow) text(ctx, `clock tick ${done ? N : i + 1} / ${N}`, cx - cr - 12, cy + 4, { mono: true, size: 11, align: "right", color: C.dim });
+
+          // question card, top left
+          const cw = narrow ? w - 3 * m - 2 * cr : Math.min(w * 0.46, 460), ch = narrow ? 50 : 64;
+          frame(ctx, m, m, cw, ch, { kind: "ticks", fill: C.fill });
+          const lx = m + 12, vx = lx + (narrow ? 40 : 52), r1 = m + (narrow ? 20 : 26), r2 = r1 + (narrow ? 19 : 24), fq = narrow ? 12 : f;
+          if (done) {
+            text(ctx, "output", lx, r1, { mono: true, size: 10, color: C.red });
+            text(ctx, "One report for this path", vx, r1, { size: fq });
+            text(ctx, "same answers, same route", lx, r2, { mono: true, size: 10, color: C.dim });
+          } else {
+            const S = STAGES[i], ans = S.opts[run[i]];
+            const q = i === 0 ? S.q : S.q, qn = Math.floor(q.length * clamp(p / 0.22, 0, 1));
+            const an = Math.floor(ans.length * clamp((p - 0.3) / 0.2, 0, 1));
+            text(ctx, "asks", lx, r1, { mono: true, size: 10, color: C.red });
+            text(ctx, q.slice(0, qn), vx, r1, { size: fq });
+            text(ctx, "user", lx, r2, { mono: true, size: 10, color: C.dim });
+            text(ctx, ans.slice(0, an), vx, r2, { size: fq, color: C.dim });
+          }
+
+          // graph
+          const gTop = m + ch + (narrow ? 26 : 44), gBot = h - m - (narrow ? 6 : 14);
+          const colX = STAGES.map((_, k) => m + 30 + (k * (w - 2 * m - 60)) / (N - 1));
+          const rowGap = (gBot - gTop - 18) / 3;
+          const r = clamp(Math.min(rowGap * 0.28, (colX[1] - colX[0]) * 0.16), 9, 26);
+          const midY = gTop + 18 + rowGap * 1.5;
+          const nodeY = (k, o) => (STAGES[k].opts.length === 1 ? midY : gTop + 18 + rowGap * (o + 0.5));
+          STAGES.forEach((S, k) => text(ctx, S.name, colX[k], gTop, { mono: true, size: 10, align: "center", color: k === i && !done ? C.red : C.faint }));
+
+          // how far along the chosen route are we?
+          const reached = (k) => k < i || done || (k === i);
+          const chosen = (k, o) => run[k] === o;
+          // edges: every option of k fans out to every option of k+1; the taken edge is lit
+          for (let k = 0; k < N - 1; k++) {
+            STAGES[k].opts.forEach((_, a) => STAGES[k + 1].opts.forEach((__, b) => {
+              const taken = chosen(k, a) && chosen(k + 1, b);
+              const lit = taken && (k < i || done);
+              const moving = taken && k === i && !done && p > 0.62;
+              if (!taken && !(chosen(k, a) && reached(k))) return;
+              const x1 = colX[k], y1 = nodeY(k, a), x2 = colX[k + 1], y2 = nodeY(k + 1, b);
+              const ang = Math.atan2(y2 - y1, x2 - x1);
+              const sx = x1 + Math.cos(ang) * (r + 3), sy = y1 + Math.sin(ang) * (r + 3);
+              const ex = x2 - Math.cos(ang) * (r + 4), ey = y2 - Math.sin(ang) * (r + 4);
+              if (lit) arrow(ctx, sx, sy, ex, ey, C.ink, 1.5, 6);
+              else if (taken && moving) {
+                arrow(ctx, sx, sy, ex, ey, C.dim, 1, 6);
+                const q = ease((p - 0.62) / 0.38);
+                pkt(ctx, lerp(sx, ex, q), lerp(sy, ey, q), 6, C.red);
+              } else if (chosen(k, a) && k === i && !done) line(ctx, [[sx, sy], [ex, ey]], C.line, 1, [2, 4]);
+              else if (chosen(k, a) && (k < i || done)) line(ctx, [[sx, sy], [ex, ey]], C.hair, 1, [2, 4]);
+            }));
+          }
+          // start arrow into the initial state
+          arrow(ctx, colX[0] - r - 26, midY, colX[0] - r - 4, midY, C.dim, 1, 5);
 
           // states
-          const gap = narrow ? 8 : clamp(w * 0.03, 14, 36);
-          const bw = (w - 2 * m - gap * (n - 1)) / n, bh = clamp(h * 0.16, 44, 76), by = h - m - bh - (narrow ? 4 : 10);
-          const xs = S.map((_, k) => m + k * (bw + gap));
-          for (let k = 0; k < n - 1; k++) {
-            const lit = k < i || (k === i && p > 0.72 && !done) || done;
-            const x1 = xs[k] + bw + 3, x2 = xs[k + 1] - 4, y = by + bh / 2;
-            arrow(ctx, x1, y, x2, y, lit ? C.ink : C.line, 1, 5);
-            if (k === i && p > 0.72 && !done) pkt(ctx, lerp(x1, x2, ease((p - 0.72) / 0.28)), y, 5, C.red);
-          }
-          S.forEach((s, k) => {
-            const active = k === i, visited = k < i || done;
-            frame(ctx, xs[k], by, bw, bh, { fill: active ? C.fill : null, color: active || visited ? C.ink : C.line, active });
-            text(ctx, String(k + 1).padStart(2, "0"), xs[k] + 8, by + 18, { mono: true, size: 11, color: active ? C.red : C.faint });
-            text(ctx, s.name, xs[k] + bw / 2, by + bh / 2 + (narrow ? 8 : 6), { size: narrow ? 11 : f, align: "center", color: active || visited ? C.ink : C.faint });
-          });
-
-          // question card
-          const fq = f + 1, lh = fq * 1.75, cw = narrow ? w - 2 * m : Math.min(w - 2 * m, Math.max(300, w * 0.42));
-          const ch = lh * 2 + 24, cxl = clamp(xs[i] + bw / 2 - cw / 2, m, w - m - cw);
-          const cyt = clamp(lerp(m + f * 3 + 16, by - ch - 24, 0.5), m + f * 2 + 24, by - ch - 22);
-          frame(ctx, cxl, cyt, cw, ch, { kind: "ticks", fill: C.fill, color: C.line });
-          line(ctx, [[xs[i] + bw / 2, cyt + ch], [xs[i] + bw / 2, by - 6]], C.line, 1, [2, 3]);
-          const lx = cxl + 16, vx = lx + (narrow ? 44 : 56), r1 = cyt + 12 + lh * 0.75, r2 = r1 + lh;
-          if (done) {
-            text(ctx, "output", lx, r1, { mono: true, size: 11, color: C.red });
-            text(ctx, "One portfolio report", vx, r1, { size: fq });
-            text(ctx, "result", lx, r2, { mono: true, size: 11, color: C.dim });
-            text(ctx, "Same answers, same report", vx, r2, { size: fq, color: C.dim });
-          } else {
-            const qn = Math.floor(S[i].q.length * clamp(p / 0.25, 0, 1));
-            const an = Math.floor(S[i].a.length * clamp((p - 0.35) / 0.25, 0, 1));
-            text(ctx, "asks", lx, r1, { mono: true, size: 11, color: C.red });
-            text(ctx, S[i].q.slice(0, qn), vx, r1, { size: fq });
-            text(ctx, "user", lx, r2, { mono: true, size: 11, color: C.dim });
-            text(ctx, S[i].a.slice(0, an), vx, r2, { size: fq, color: C.dim });
-          }
+          STAGES.forEach((S, k) => S.opts.forEach((label, o) => {
+            const x = colX[k], y = nodeY(k, o);
+            const onRoute = chosen(k, o);
+            const active = onRoute && k === i && !done;
+            const visited = onRoute && (k < i || done);
+            const preview = onRoute && k === i + 1 && !done && p > 0.5;
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = active || visited ? C.fill : C.bg; ctx.fill();
+            ctx.strokeStyle = active || visited ? C.ink : preview ? C.dim : C.line; ctx.lineWidth = active ? 1.5 : 1; ctx.stroke();
+            if (k === N - 1) { ctx.beginPath(); ctx.arc(x, y, r - 4, 0, Math.PI * 2); ctx.stroke(); }
+            if (active || (done && k === N - 1)) { ctx.beginPath(); ctx.arc(x, y, r + 6, 0, Math.PI * 2); ctx.strokeStyle = C.red; ctx.lineWidth = 1.5; ctx.stroke(); }
+            if (visited || active) pkt(ctx, x, y, 4, active ? C.red : C.ink);
+            const show = !narrow || onRoute;
+            if (show) text(ctx, label, x, y + r + (narrow ? 13 : 17) + (active ? 7 : 0), { size: narrow ? 10 : Math.max(11, f - 3), align: "center", color: active || visited ? C.ink : C.faint });
+          }));
+          if (!narrow) text(ctx, "each circle is a state", m, h - m, { mono: true, size: 10, color: C.faint });
           t++;
         },
       };
@@ -283,13 +316,13 @@
             s3 = { x: m, y: h * 0.08, w: w * 0.19, h: h * 0.5 };
             ecr = { x: m, y: h * 0.66, w: w * 0.19, h: Math.min(h * 0.26, f + 52) };
             vpc = { x: w * 0.26, y: h * 0.05, w: w * 0.49, h: h * 0.9 };
-            out = { x: w * 0.8, y: 0, w: w * 0.2 - m, h: Math.min(h * 0.6, f + 42 + 3 * 24 + 6) };
+            out = { x: w * 0.79, y: 0, w: w * 0.21 - m, h: Math.min(h * 0.7, f + 46 + 3 * 34) };
             out.y = (h - out.h) / 2;
           } else {
-            s3 = { x: m, y: m, w: w * 0.3, h: h * 0.3 };
-            ecr = { x: m, y: m + h * 0.34, w: w * 0.3, h: h * 0.2 };
-            vpc = { x: w * 0.37, y: m, w: w * 0.63 - m, h: h * 0.6 };
-            out = { x: m, y: h * 0.69, w: w - 2 * m, h: h * 0.31 - m };
+            s3 = { x: m, y: m, w: w * 0.3, h: h * 0.27 };
+            ecr = { x: m, y: m + h * 0.31, w: w * 0.3, h: h * 0.19 };
+            vpc = { x: w * 0.37, y: m, w: w * 0.63 - m, h: h * 0.5 };
+            out = { x: m, y: h * 0.58, w: w - 2 * m, h: h * 0.42 - m };
           }
           // S3 with a pile of images
           frame(ctx, s3.x, s3.y, s3.w, s3.h, { active: ph === 0 });
@@ -348,14 +381,18 @@
           // prioritization
           frame(ctx, out.x, out.y, out.w, out.h, { active: ph === 3 });
           text(ctx, "Prioritize", out.x + 10, out.y + f + 8, { size: f + 1 });
-          text(ctx, "by platform risk", out.x + 10, out.y + f + 26, { mono: true, size: lbl, color: C.dim });
-          const bars = [["bmc", 0.92, C.red], ["bios", 0.64, C.ink], ["gpu", 0.4, C.dim]];
-          const bx = out.x + 10, by0 = out.y + f + 42, bh = clamp((out.y + out.h - by0 - 10) / 3 - 8, 4, 14), lab = 44;
+          text(ctx, narrow ? "by type" : "by vulnerability type", out.x + 10, out.y + f + 26, { mono: true, size: lbl, color: C.dim });
+          // ranked by type of finding, most urgent first
+          const bars = narrow
+            ? [["CWEs over threshold", 0.92, C.red], ["Weak hashes", 0.64, C.ink], ["Permissive files", 0.42, C.dim]]
+            : [["CWEs above severity threshold", 0.92, C.red], ["Weak hashes (MD5)", 0.64, C.ink], ["Overly permissive files", 0.42, C.dim]];
+          const bx = out.x + 10, bw = out.w - 20, by0 = out.y + f + 46, rowH = narrow ? 30 : 34;
           bars.forEach(([name, v, col], k) => {
-            const y = by0 + k * (bh + 10), grow = ph === 3 ? ease(pp * 1.6) : 0;
-            text(ctx, name, bx, y + bh / 2 + 1, { mono: true, size: lbl, base: "middle", color: C.dim });
-            frame(ctx, bx + lab, y, out.w - lab - 22, bh, { color: C.hair });
-            if (grow > 0) { ctx.fillStyle = col; ctx.fillRect(bx + lab + 1, y + 1, (out.w - lab - 24) * v * grow, bh - 1); }
+            const y = by0 + k * rowH, grow = ph === 3 ? ease(pp * 1.6 - k * 0.15) : 0;
+            text(ctx, String(k + 1).padStart(2, "0"), bx, y, { mono: true, size: 10, color: ph === 3 && k === 0 ? C.red : C.faint });
+            text(ctx, name, bx + 24, y, { size: narrow ? 11 : 12, color: ph === 3 ? C.ink : C.dim });
+            frame(ctx, bx, y + 7, bw, 5, { color: C.hair });
+            if (grow > 0) { ctx.fillStyle = col; ctx.fillRect(bx + 1, y + 8, (bw - 2) * v * grow, 4); }
           });
           ck.t++;
         },
@@ -688,6 +725,156 @@
       };
     },
 
+    // ---------- Centipede project: a schematic of the game's systems ----------
+    centipede(canvas) {
+      const ck = phases(150, 4), COLS = 24, ROWS = 14;
+      let seedN = 1, mush, cent, spider, shots, score, lives, flashes;
+      function reset() {
+        const rand = rng(seedN++ * 97);
+        mush = [];
+        for (let k = 0; k < 34; k++) mush.push({ x: 1 + Math.floor(rand() * (COLS - 2)), y: 2 + Math.floor(rand() * (ROWS - 6)), hp: 3 });
+        cent = { x: 0, y: 1, dir: 1, body: [] };
+        spider = { x: 4, y: ROWS - 3, vx: 1, vy: -1, rand };
+        shots = []; score = 0; lives = 3; flashes = [];
+      }
+      reset();
+      const mushAt = (x, y) => mush.find((m) => m.x === x && m.y === y && m.hp > 0);
+      let segs = 12;
+      return {
+        tick: 33, still: 150 * 2 + 60, steps: 4,
+        step: ck.ph,
+        seek(k) { ck.seek(k); if (k === 0) { reset(); segs = 12; } },
+        draw() {
+          const { ctx, w, h } = fit(canvas);
+          const ph = ck.ph(), pp = ck.pp();
+          if (ck.t % (150 * 4) === 0) { reset(); segs = 12; }
+          const hud = 22, cell = Math.min((w - 20) / COLS, (h - hud - 16) / ROWS);
+          const ox = (w - cell * COLS) / 2, oy = hud + 8 + (h - hud - 16 - cell * ROWS) / 2;
+          const X = (x) => ox + x * cell, Y = (y) => oy + y * cell;
+          frame(ctx, ox, oy, cell * COLS, cell * ROWS, { color: C.hair });
+          // HUD
+          text(ctx, `score ${String(score).padStart(4, "0")}`, ox, hud, { mono: true, size: 10, color: ph === 3 ? C.red : C.dim });
+          text(ctx, `lives ${lives}`, ox + cell * COLS, hud, { mono: true, size: 10, align: "right", color: ph === 3 ? C.red : C.dim });
+          // mushrooms, placed at random (appear during step 1)
+          const shown = ph === 0 ? Math.floor(mush.length * ease(pp * 1.3)) : mush.length;
+          mush.slice(0, shown).forEach((m) => {
+            if (m.hp <= 0) return;
+            const s = cell * (0.3 + m.hp * 0.12);
+            frame(ctx, X(m.x) + (cell - s) / 2, Y(m.y) + (cell - s) / 2, s, s, { color: ph === 0 ? C.dim : C.line });
+          });
+          const moving = ph >= 1, tickMove = ck.t % 4 === 0;
+          // centipede: walks a row, drops down and turns at a wall or mushroom
+          if (moving && tickMove && segs > 0) {
+            cent.body.unshift({ x: cent.x, y: cent.y });
+            cent.body.length = Math.min(cent.body.length, segs - 1);
+            const nx = cent.x + cent.dir;
+            if (nx < 0 || nx >= COLS || mushAt(nx, cent.y)) { cent.y = cent.y + 1 >= ROWS - 1 ? 1 : cent.y + 1; cent.dir *= -1; }
+            else cent.x = nx;
+          }
+          if (moving && segs > 0) {
+            cent.body.forEach((b) => { ctx.fillStyle = C.ink; ctx.fillRect(X(b.x) + cell * 0.18, Y(b.y) + cell * 0.18, cell * 0.64, cell * 0.64); });
+            ctx.fillStyle = C.red; ctx.fillRect(X(cent.x) + cell * 0.12, Y(cent.y) + cell * 0.12, cell * 0.76, cell * 0.76);
+          }
+          // spider: random walk near the bottom, eats mushrooms
+          if (moving) {
+            if (tickMove) {
+              if (spider.rand() < 0.3) spider.vy *= -1;
+              if (spider.rand() < 0.15) spider.vx *= -1;
+              spider.x = clamp(spider.x + spider.vx, 0, COLS - 1); spider.y = clamp(spider.y + spider.vy, ROWS - 6, ROWS - 2);
+              if (spider.x === 0 || spider.x === COLS - 1) spider.vx *= -1;
+              const m = mushAt(spider.x, spider.y); if (m) m.hp = 0;
+            }
+            const sx = X(spider.x) + cell / 2, sy = Y(spider.y) + cell / 2, a = cell * 0.32;
+            line(ctx, [[sx - a, sy - a], [sx + a, sy + a]], C.dim, 1.5); line(ctx, [[sx - a, sy + a], [sx + a, sy - a]], C.dim, 1.5);
+          }
+          // ship and laser blasts
+          const shipX = COLS / 2 + Math.sin(ck.t / 40) * (COLS / 2 - 2);
+          const px = ox + shipX * cell, py = Y(ROWS - 1) + cell * 0.85;
+          line(ctx, [[px - cell * 0.45, py], [px, py - cell * 0.75], [px + cell * 0.45, py], [px - cell * 0.45, py]], C.ink, 1.5);
+          if (ph >= 2) {
+            if (ck.t % 10 === 0) shots.push({ x: Math.floor(shipX), y: ROWS - 1.5 });
+            shots.forEach((s) => {
+              s.y -= 0.6;
+              const cx = s.x, cy = Math.round(s.y);
+              const m = mushAt(cx, cy);
+              if (m) { m.hp--; s.dead = true; score += 1; flashes.push({ x: cx, y: cy, t: 8 }); }
+              else if (segs > 0 && (cent.x === cx && cent.y === cy || cent.body.some((b) => b.x === cx && b.y === cy))) {
+                s.dead = true; score += 10; segs = Math.max(0, segs - 1); flashes.push({ x: cx, y: cy, t: 10 });
+                if (segs === 0) { segs = 12; cent = { x: 0, y: 1, dir: 1, body: [] }; }
+              }
+              if (s.y < 0) s.dead = true;
+              if (!s.dead) line(ctx, [[X(s.x) + cell / 2, Y(s.y)], [X(s.x) + cell / 2, Y(s.y) + cell * 0.6]], C.ink, 1.5);
+            });
+            shots = shots.filter((s) => !s.dead);
+          }
+          flashes.forEach((fl) => { marks(ctx, X(fl.x), Y(fl.y), cell, cell, C.red, 2, 5, 1.5); fl.t--; });
+          flashes = flashes.filter((fl) => fl.t > 0);
+          const label = ["random placement · std::uniform_int_distribution", "11 segments + head · spider", "collision handling", "score · lives · game state"][ph];
+          if (w > 420) text(ctx, label, w / 2, hud, { mono: true, size: 10, align: "center", color: C.faint });
+          ck.t++;
+        },
+      };
+    },
+
+    // ---------- Netpbm converter: parse → malloc → convert → write ----------
+    netpbm(canvas) {
+      const ck = phases(150, 4), G = 12;
+      const px = [];
+      for (let y = 0; y < G; y++) for (let x = 0; x < G; x++) {
+        const dx = x - 5.5, dy = y - 5.5, d = Math.hypot(dx, dy);
+        px.push(clamp(1 - d / 7 + (x + y) * 0.015 + ((x * 7 + y * 3) % 5) * 0.02, 0, 1));
+      }
+      return {
+        tick: 33, still: 150 * 3 - 4, steps: 4,
+        step: ck.ph, seek: ck.seek,
+        draw() {
+          const { ctx, w, h } = fit(canvas);
+          const ph = ck.ph(), pp = ck.pp(), toPbm = Math.floor(ck.t / (150 * 4)) % 2 === 1;
+          const narrow = w < 460, top = 30, bot = narrow ? 44 : 56;
+          const size = Math.min((w - (narrow ? 64 : 120)) / 2, h - top - bot);
+          const cell = size / G, gx1 = (w - size * 2 - (narrow ? 44 : 90)) / 2, gx2 = w - gx1 - size, gy = top + 4;
+          text(ctx, "$ ppmcvt <options> in.ppm", gx1, 16, { mono: true, upper: false, size: 11, color: ph === 0 ? C.ink : C.faint });
+          // input pixels (PPM, shown by luminance)
+          for (let k = 0; k < G * G; k++) {
+            const v = px[k], c = Math.round(20 + v * 215);
+            ctx.fillStyle = `rgb(${c},${c - 4},${c - 10})`;
+            ctx.fillRect(gx1 + (k % G) * cell, gy + Math.floor(k / G) * cell, cell - 1, cell - 1);
+          }
+          frame(ctx, gx1 - 4, gy - 4, size + 8, size + 8, { color: C.line, active: ph === 0 });
+          // output: rows allocated (step 2), filled pixel by pixel (step 3)
+          const rowsAlloc = ph === 0 ? 0 : ph === 1 ? Math.ceil(G * ease(pp * 1.2)) : G;
+          const filled = ph < 2 ? 0 : ph === 2 ? Math.floor(G * G * clamp(pp * 1.15, 0, 1)) : G * G;
+          for (let y = 0; y < rowsAlloc; y++) frame(ctx, gx2, gy + y * cell, size - 1, cell - 1, { color: ph === 1 && y === rowsAlloc - 1 ? C.red : C.hair });
+          for (let k = 0; k < filled; k++) {
+            const v = px[k], c = toPbm ? (v > 0.45 ? 236 : 10) : Math.round(20 + v * 215);
+            ctx.fillStyle = `rgb(${c},${c},${c})`;
+            ctx.fillRect(gx2 + (k % G) * cell, gy + Math.floor(k / G) * cell, cell - 1, cell - 1);
+          }
+          frame(ctx, gx2 - 4, gy - 4, size + 8, size + 8, { color: C.line, active: ph >= 2 });
+          if (ph === 2 && filled < G * G) {
+            const k = filled, x = k % G, y = Math.floor(k / G);
+            frame(ctx, gx1 + x * cell - 1, gy + y * cell - 1, cell + 1, cell + 1, { color: C.red });
+            frame(ctx, gx2 + x * cell - 1, gy + y * cell - 1, cell + 1, cell + 1, { color: C.red });
+          }
+          // arrow between
+          const ay = gy + size / 2;
+          arrow(ctx, gx1 + size + 12, ay, gx2 - 12, ay, ph === 2 ? C.ink : C.line);
+          if (!narrow) text(ctx, ph === 1 ? "malloc" : "pixels", (gx1 + size + gx2) / 2, ay - 10, { mono: true, size: 10, align: "center", color: ph === 1 ? C.red : C.dim });
+          // headers
+          const hy = gy + size + 22, hs = narrow ? 10 : 11;
+          const inHead = ["P3", `${G} ${G}`, "255"], outHead = toPbm ? ["P1", `${G} ${G}`] : ["P2", `${G} ${G}`, "255"];
+          const inN = ph === 0 ? Math.ceil(inHead.length * clamp(pp * 1.5, 0, 1)) : inHead.length;
+          text(ctx, "in.ppm  " + inHead.slice(0, inN).join("  "), gx1, hy, { mono: true, upper: false, size: hs, color: ph === 0 ? C.ink : C.dim });
+          const outName = toPbm ? "out.pbm" : "out.pgm";
+          if (ph === 3) {
+            const n = Math.ceil(outHead.length * clamp(pp * 1.6, 0, 1));
+            text(ctx, `${outName}  ${outHead.slice(0, n).join("  ")}`, gx2, hy, { mono: true, upper: false, size: hs, color: C.red });
+          } else text(ctx, ph >= 1 ? `${outName}` : "", gx2, hy, { mono: true, upper: false, size: hs, color: C.faint });
+          ck.t++;
+        },
+      };
+    },
+
     // ---------- Distribution fit ----------
     fit(canvas) {
       const rand = rng(11);
@@ -790,6 +977,16 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => players.forEach((p) => p.film.draw()), 150);
   });
+
+  // ---------- slide-in for education and skills ----------
+  const reveals = document.querySelectorAll(".reveal");
+  if (reduce || !("IntersectionObserver" in window)) reveals.forEach((el) => el.classList.add("is-in"));
+  else {
+    const ro = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add("is-in"); ro.unobserve(e.target); }
+    }), { rootMargin: "0px 0px -12% 0px" });
+    reveals.forEach((el) => ro.observe(el));
+  }
 
   // ---------- shutter reveal ----------
   const shutters = document.querySelectorAll(".footage");

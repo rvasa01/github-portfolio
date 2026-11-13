@@ -99,11 +99,6 @@
 
       <article class="scene" id="job-startup" data-label="Stealth AI Startup">
         <p class="dates">Oct – Dec 2025</p>
-        <figure class="footage" data-summary="A finite state machine asks one question per state, then lands on a single output.">
-          <figcaption class="visually-hidden">A finite state machine asks one question per state, then lands on a single output.</figcaption>
-          <canvas data-film="fsm" aria-hidden="true"></canvas>
-          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Intent</strong><span class="d">Every request starts here. The machine asks one question: what do you need?</span></button></li><li><button type="button"><span class="n">02</span><strong>Account</strong><span class="d">The next clock tick moves it to Account. It can&#x27;t advance until the user answers.</span></button></li><li><button type="button"><span class="n">03</span><strong>Horizon</strong><span class="d">Each answer narrows the context, so the model never has to guess what was meant.</span></button></li><li><button type="button"><span class="n">04</span><strong>Risk</strong><span class="d">The last question for this use case. Each state is defined as a Pydantic model.</span></button></li><li><button type="button"><span class="n">05</span><strong>Output</strong><span class="d">Every state is answered, so the model produces one report. Same answers gave the same output 99% of the time.</span></button></li></ol>
-        </figure>
         <div class="scene-body">
           <div class="scene-card">
             <h3>Founding Engineer</h3>
@@ -119,15 +114,15 @@
             <li>Demoed the system to a client, who responded strongly to its deterministic, auditable output.</li>
           </ul>
         </div>
+        <figure class="footage" data-summary="A finite state machine drawn as circles, one per state. Each state asks one question, and the user's answers pick one of three branches at each step until the route reaches a single output state.">
+          <figcaption class="fig-head"><span class="fig-kicker">Diagram · Stealth AI Startup</span><span class="fig-title">Intent clarification with a finite state machine</span><span class="fig-use">Use case: portfolio analysis</span><span class="visually-hidden"> A finite state machine drawn as circles, one per state. Each state asks one question, and the user's answers pick one of three branches at each step until the route reaches a single output state.</span></figcaption>
+          <canvas data-film="fsm" aria-hidden="true"></canvas>
+          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Intent</strong><span class="d">Each circle is a state in the FSM. Every request starts in the Intent state, which asks one question: what do you need?</span></button></li><li><button type="button"><span class="n">02</span><strong>Account</strong><span class="d">The answer picks one of three branches. On the next clock tick the machine moves to that state; it can&#x27;t advance until the user answers.</span></button></li><li><button type="button"><span class="n">03</span><strong>Horizon</strong><span class="d">Different answers take different routes, so each one narrows the context and the model never has to guess what was meant.</span></button></li><li><button type="button"><span class="n">04</span><strong>Risk</strong><span class="d">The last question for this use case. Each state is defined as a Pydantic model.</span></button></li><li><button type="button"><span class="n">05</span><strong>Output</strong><span class="d">Every route ends in a single output state. Given the same answers, the system took the same route and produced the same output 99% of the time.</span></button></li></ol>
+        </figure>
       </article>
 
       <article class="scene" id="job-aws" data-label="Amazon Web Services">
         <p class="dates">Jun – Aug 2025</p>
-        <figure class="footage" data-summary="Firmware images in S3 are scanned by 100 parallel ECS Fargate tasks running EMBA from ECR inside a private VPC, and findings are ranked by platform.">
-          <figcaption class="visually-hidden">Firmware images in S3 are scanned by 100 parallel ECS Fargate tasks running EMBA from ECR inside a private VPC, and findings are ranked by platform.</figcaption>
-          <canvas data-film="aws" aria-hidden="true"></canvas>
-          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Store</strong><span class="d">200+ firmware images for BMC, BIOS, and GPU platforms sit in an S3 bucket.</span></button></li><li><button type="button"><span class="n">02</span><strong>Provision</strong><span class="d">CloudFormation stands up 100 ECS Fargate tasks in a private VPC. Each pulls the EMBA scanner image from ECR.</span></button></li><li><button type="button"><span class="n">03</span><strong>Scan</strong><span class="d">Each task runs EMBA on one image: static analysis (Binwalk, YARA), then dynamic (QEMU emulation, fuzzing). 100 at once cut a batch from ~300 hours to ~3.</span></button></li><li><button type="button"><span class="n">04</span><strong>Prioritize</strong><span class="d">Findings are ranked against custom severity thresholds by platform risk. Amazon&#x27;s SHAFT team used the ranking to decide what to fix first.</span></button></li></ol>
-        </figure>
         <div class="scene-body">
           <div class="scene-card">
             <h3>Security Engineer Intern, Application Security</h3>
@@ -137,19 +132,19 @@
             <li>Performed static analysis with custom YARA rules and detection scripts to audit BMC firmware across 1.5M+ hosts, flagging weak MD5 hashing, misconfigured init-file permissions that could let attackers persist across reboots, and insecure practices in bundled open-source libraries; reported findings to owning teams for remediation.</li>
             <li>Automated firmware vulnerability analysis for embedded Linux platforms (BIOS, BMC, GPU) using EMBA, combining static analysis (Binwalk extraction, YARA rules) with dynamic analysis (QEMU emulation, fuzzing), scanning 200+ firmware images.</li>
             <li>Built a parallel scanning pipeline on ECS Fargate, provisioned with CloudFormation inside private VPCs, running 100 firmware scans concurrently and cutting batch time from ~300 hours to ~3 hours.</li>
-            <li>Designed a firmware-type-aware prioritization framework with custom severity thresholds, ranking vulnerabilities by platform risk (BMC vs. BIOS vs. GPU); Amazon's Secure Hardware and Foundational Technologies (SHAFT) team used it to decide which vulnerabilities to fix first.</li>
+            <li>Designed a firmware-type-aware prioritization framework with custom severity thresholds, ranking findings by vulnerability type (CWEs above a severity threshold, weak hashes such as MD5, overly permissive files); Amazon's Secure Hardware and Foundational Technologies (SHAFT) team used it to decide which vulnerabilities to fix first.</li>
             <li>My scanner, pipeline, and prioritization framework were packaged into an internal software tool that is now used by multiple teams across Amazon and actively maintained and extended by a dedicated software team.</li>
           </ul>
         </div>
+        <figure class="footage" data-summary="Firmware images in S3 are scanned by 100 parallel ECS Fargate tasks running EMBA from ECR inside a private VPC, and findings are ranked by vulnerability type.">
+          <figcaption class="fig-head"><span class="fig-kicker">Diagram · Amazon Web Services</span><span class="fig-title">Parallel firmware scanning on ECS Fargate</span><span class="visually-hidden"> Firmware images in S3 are scanned by 100 parallel ECS Fargate tasks running EMBA from ECR inside a private VPC, and findings are ranked by vulnerability type.</span></figcaption>
+          <canvas data-film="aws" aria-hidden="true"></canvas>
+          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Store</strong><span class="d">200+ firmware images for BMC, BIOS, and GPU platforms sit in an S3 bucket.</span></button></li><li><button type="button"><span class="n">02</span><strong>Provision</strong><span class="d">CloudFormation stands up 100 ECS Fargate tasks in a private VPC. Each pulls the EMBA scanner image from ECR.</span></button></li><li><button type="button"><span class="n">03</span><strong>Scan</strong><span class="d">Each task runs EMBA on one image: static analysis (Binwalk, YARA), then dynamic (QEMU emulation, fuzzing). 100 at once cut a batch from ~300 hours to ~3.</span></button></li><li><button type="button"><span class="n">04</span><strong>Prioritize</strong><span class="d">Findings are ranked by vulnerability type against custom severity thresholds: CWEs above the threshold first, then weak hashes such as MD5, then overly permissive files. Amazon&#x27;s SHAFT team used the ranking to decide what to fix first.</span></button></li></ol>
+        </figure>
       </article>
 
       <article class="scene" id="job-honeypot" data-label="Honeypot Technologies">
         <p class="dates">May 2024 – Apr 2025</p>
-        <figure class="footage" data-summary="Attackers scan the network; probes that pass the firewall land on honeypots, which report each attack to a central monitoring server.">
-          <figcaption class="visually-hidden">Attackers scan the network; probes that pass the firewall land on honeypots, which report each attack to a central monitoring server.</figcaption>
-          <canvas data-film="honeypot" aria-hidden="true"></canvas>
-          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Scan</strong><span class="d">Attackers sweep the internet for open ports. The firewall drops most probes.</span></button></li><li><button type="button"><span class="n">02</span><strong>Lure</strong><span class="d">Every host on this network is a honeypot. OpenCanary makes each one pose as a live service: SSH, RDP, a web server, a database.</span></button></li><li><button type="button"><span class="n">03</span><strong>Log</strong><span class="d">Each honeypot records the attacker&#x27;s IP and the port it hit, and reports it to the central server.</span></button></li><li><button type="button"><span class="n">04</span><strong>Monitor</strong><span class="d">The central server shows attacks as they happen, giving early warning for incident response.</span></button></li></ol>
-        </figure>
         <div class="scene-body">
           <div class="scene-card">
             <h3>Security Engineering Intern</h3>
@@ -170,6 +165,11 @@
             </ul>
           </div>
         </div>
+        <figure class="footage" data-summary="Attackers scan the network; probes that pass the firewall land on honeypots, which report each attack to a central monitoring server.">
+          <figcaption class="fig-head"><span class="fig-kicker">Diagram · Honeypot Technologies</span><span class="fig-title">Honeypot network and attack telemetry</span><span class="visually-hidden"> Attackers scan the network; probes that pass the firewall land on honeypots, which report each attack to a central monitoring server.</span></figcaption>
+          <canvas data-film="honeypot" aria-hidden="true"></canvas>
+          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Scan</strong><span class="d">Attackers sweep the internet for open ports. The firewall drops most probes.</span></button></li><li><button type="button"><span class="n">02</span><strong>Lure</strong><span class="d">Every host on this network is a honeypot. OpenCanary makes each one pose as a live service: SSH, RDP, a web server, a database.</span></button></li><li><button type="button"><span class="n">03</span><strong>Log</strong><span class="d">Each honeypot records the attacker&#x27;s IP and the port it hit, and reports it to the central server.</span></button></li><li><button type="button"><span class="n">04</span><strong>Monitor</strong><span class="d">The central server shows attacks as they happen, giving early warning for incident response.</span></button></li></ol>
+        </figure>
       </article>
     </section>
 
@@ -178,11 +178,6 @@
 
       <article class="scene" id="job-gt" data-label="Cyberphysical Systems Lab, Georgia Tech">
         <p class="dates">Aug – Dec 2023</p>
-        <figure class="footage" data-summary="A grid energy simulation exchanges data with ROS through HELICS, and the energy data drives how a line robot moves along the power lines.">
-          <figcaption class="visually-hidden">A grid energy simulation exchanges data with ROS through HELICS, and the energy data drives how a line robot moves along the power lines.</figcaption>
-          <canvas data-film="gridbot" aria-hidden="true"></canvas>
-          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Grid simulation</strong><span class="d">A power grid simulation, built with the Pacific Northwest National Laboratory (PNNL), produces energy data for the lines.</span></button></li><li><button type="button"><span class="n">02</span><strong>HELICS</strong><span class="d">HELICS co-simulation exchanges that energy data with ROS, keeping the grid and the robot in sync.</span></button></li><li><button type="button"><span class="n">03</span><strong>ROS</strong><span class="d">ROS turns the energy data into motion commands for the line robot.</span></button></li><li><button type="button"><span class="n">04</span><strong>Line robot</strong><span class="d">The robot moves along the line in response. Capturing both sides together made the simulation 10x more accurate.</span></button></li></ol>
-        </figure>
         <div class="scene-body">
           <div class="scene-card">
             <h3>Research Team Leader</h3>
@@ -194,15 +189,15 @@
             <li>Planned and assigned work in Jira around each member's strengths, ran team meetings, and documented results in an IEEE-format research paper.</li>
           </ul>
         </div>
+        <figure class="footage" data-summary="A grid energy simulation exchanges data with ROS through HELICS, and the energy data drives how a line robot moves along the power lines.">
+          <figcaption class="fig-head"><span class="fig-kicker">Diagram · Cyberphysical Systems Lab, Georgia Tech</span><span class="fig-title">ROS and HELICS co-simulation with PNNL</span><span class="visually-hidden"> A grid energy simulation exchanges data with ROS through HELICS, and the energy data drives how a line robot moves along the power lines.</span></figcaption>
+          <canvas data-film="gridbot" aria-hidden="true"></canvas>
+          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Grid simulation</strong><span class="d">A power grid simulation, built with the Pacific Northwest National Laboratory (PNNL), produces energy data for the lines.</span></button></li><li><button type="button"><span class="n">02</span><strong>HELICS</strong><span class="d">HELICS co-simulation exchanges that energy data with ROS, keeping the grid and the robot in sync.</span></button></li><li><button type="button"><span class="n">03</span><strong>ROS</strong><span class="d">ROS turns the energy data into motion commands for the line robot.</span></button></li><li><button type="button"><span class="n">04</span><strong>Line robot</strong><span class="d">The robot moves along the line in response.</span></button></li></ol>
+        </figure>
       </article>
 
       <article class="scene" id="job-emory" data-label="Perception and Action Lab, Emory">
         <p class="dates">Aug 2022 – Mar 2023</p>
-        <figure class="footage" data-summary="Decision data fills a histogram, then a normal curve is fitted over it.">
-          <figcaption class="visually-hidden">Decision data fills a histogram, then a normal curve is fitted over it.</figcaption>
-          <canvas data-film="fit" aria-hidden="true"></canvas>
-          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Collect</strong><span class="d">Decision data from mice, plus synthetic data generated in Python, fills the histogram.</span></button></li><li><button type="button"><span class="n">02</span><strong>Fit</strong><span class="d">The statistical distribution that best fits the data is found and drawn over it.</span></button></li><li><button type="button"><span class="n">03</span><strong>Prepare</strong><span class="d">The data is cleaned and pre-processed as input for a neural network.</span></button></li></ol>
-        </figure>
         <div class="scene-body">
           <div class="scene-card">
             <h3>Research Assistant</h3>
@@ -213,6 +208,11 @@
             <li>Identified the statistical distribution that best fit the data, then cleaned and pre-processed it as input for a neural network.</li>
           </ul>
         </div>
+        <figure class="footage" data-summary="Decision data fills a histogram, then a normal curve is fitted over it.">
+          <figcaption class="fig-head"><span class="fig-kicker">Diagram · Perception and Action Lab, Emory</span><span class="fig-title">Fitting a distribution to decision data</span><span class="visually-hidden"> Decision data fills a histogram, then a normal curve is fitted over it.</span></figcaption>
+          <canvas data-film="fit" aria-hidden="true"></canvas>
+          <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Collect</strong><span class="d">Decision data from mice, plus synthetic data generated in Python, fills the histogram.</span></button></li><li><button type="button"><span class="n">02</span><strong>Fit</strong><span class="d">The statistical distribution that best fits the data is found and drawn over it.</span></button></li><li><button type="button"><span class="n">03</span><strong>Prepare</strong><span class="d">The data is cleaned and pre-processed as input for a neural network.</span></button></li></ol>
+        </figure>
       </article>
     </section>
 
@@ -256,8 +256,10 @@
           </div>
         </li>
         <li class="reel">
-          <figure>
-            <img src="assets/img/reel/centipede.jpg" alt="Screenshot of the Centipede game's start screen" loading="lazy" class="still still-centipede">
+          <figure data-summary="Mushrooms are placed at random, the centipede and a spider move through them, and collisions are resolved each frame.">
+            <figcaption class="visually-hidden">Mushrooms are placed at random, the centipede and a spider move through them, and collisions are resolved each frame.</figcaption>
+            <canvas data-film="centipede" aria-hidden="true"></canvas>
+            <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Set up</strong><span class="d">Mushrooms are scattered across the play area with std::uniform_int_distribution.</span></button></li><li><button type="button"><span class="n">02</span><strong>Move</strong><span class="d">A centipede of 11 body segments and a head winds through the mushrooms while a spider roams at random.</span></button></li><li><button type="button"><span class="n">03</span><strong>Collide</strong><span class="d">Collision handling resolves laser blasts, centipede segments, mushrooms, and the spider.</span></button></li><li><button type="button"><span class="n">04</span><strong>Keep score</strong><span class="d">The game tracks score and lives, and returns to the start screen when it ends.</span></button></li></ol>
           </figure>
           <div>
             <h3><a href="https://github.com/rvasa01/Retro-Centipede-Arcade-Game-SFML" target="_blank" rel="noopener">Centipede arcade game</a></h3>
@@ -266,8 +268,10 @@
           </div>
         </li>
         <li class="reel">
-          <figure>
-            <img src="assets/img/reel/netpbm.jpg" alt="Sample PBM, PGM, and PPM files shown as text" loading="lazy" class="still still-netpbm">
+          <figure data-summary="A PPM image's header is parsed, its pixels are loaded into a 2D array, converted pixel by pixel, and written out in another Netpbm format.">
+            <figcaption class="visually-hidden">A PPM image's header is parsed, its pixels are loaded into a 2D array, converted pixel by pixel, and written out in another Netpbm format.</figcaption>
+            <canvas data-film="netpbm" aria-hidden="true"></canvas>
+            <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Parse</strong><span class="d">ppmcvt.c reads the command-line options and the input file&#x27;s header: format, width, and height.</span></button></li><li><button type="button"><span class="n">02</span><strong>Allocate</strong><span class="d">pbm_aux.c allocates the pixels as a 2D array with malloc.</span></button></li><li><button type="button"><span class="n">03</span><strong>Convert</strong><span class="d">Each pixel is transformed, for example a color PPM pixel into a grayscale or black-and-white one.</span></button></li><li><button type="button"><span class="n">04</span><strong>Write</strong><span class="d">The converted pixels are written out as a PBM, PGM, or PPM file.</span></button></li></ol>
           </figure>
           <div>
             <h3><a href="https://github.com/rvasa01/Converting-between-PBM-PGM-and-PPM-images" target="_blank" rel="noopener">Converting between PBM, PGM, and PPM images</a></h3>
@@ -279,42 +283,59 @@
       <p class="more"><a class="link" href="https://github.com/rvasa01?tab=repositories" target="_blank" rel="noopener">More on GitHub</a></p>
     </section>
 
-    <section class="chapter end-credits" id="education" data-label="Education" aria-labelledby="edu-h">
+    <section class="chapter education" id="education" data-label="Education" aria-labelledby="edu-h">
       <h2 class="chapter-title" id="edu-h">Education</h2>
-      <dl class="roll roll-edu">
-        <dt>Georgia Institute of Technology</dt>
-        <dd><strong>B.S. Computer Engineering, minor in Artificial Intelligence</strong><span>Aug 2023 – May 2025</span></dd>
-        <dt>Specialization</dt>
-        <dd>Cybersecurity and digital signal processing</dd>
-        <dt>Coursework</dt>
-        <dd>Intro to Malware Reverse Engineering, Intro to Computer Security, Internetwork Security, Computer Communications, Programming for Hardware and Software Systems, Advanced Programming Techniques for Engineering Applications, Fundamentals of Machine Learning, Optimization of Information Systems, Physical Foundations of Computer Engineering</dd>
-        <dt>Research</dt>
-        <dd>Cyberphysical Systems Lab (Dr. William Stuckey, Dr. Samuel Litchfield); Cyber Forensics Innovation Laboratory (Dr. Brendan Saltaformaggio)</dd>
-      </dl>
-      <dl class="roll roll-edu">
-        <dt>Emory University</dt>
-        <dd><strong>B.A. Computer Science, minor in Physics</strong><span>Aug 2020 – May 2023</span></dd>
-        <dt>Coursework</dt>
-        <dd>Data Structures and Algorithms, Foundations of Computer Science, Systems Programming, Advanced Computer Architecture, Database Systems</dd>
-        <dt>Research</dt>
-        <dd>Perception and Action Lab (Dr. Chris Rodgers)</dd>
-      </dl>
+      <div class="schools">
+        <article class="school reveal" style="--i:0">
+          <p class="dates">Aug 2023 – May 2025</p>
+          <h3>Georgia Institute of Technology</h3>
+          <p class="degree">B.S. Computer Engineering, minor in Artificial Intelligence</p>
+          <dl class="facts">
+            <dt>Specialization</dt><dd>Cybersecurity and digital signal processing</dd>
+            <dt>Research</dt><dd>Cyberphysical Systems Lab (Dr. William Stuckey, Dr. Samuel Litchfield); Cyber Forensics Innovation Laboratory (Dr. Brendan Saltaformaggio)</dd>
+            <dt>Coursework</dt><dd><ul class="courses"><li>Intro to Malware Reverse Engineering</li><li>Intro to Computer Security</li><li>Internetwork Security</li><li>Computer Communications</li><li>Programming for Hardware and Software Systems</li><li>Advanced Programming Techniques for Engineering Applications</li><li>Fundamentals of Machine Learning</li><li>Optimization of Information Systems</li><li>Physical Foundations of Computer Engineering</li></ul></dd>
+          </dl>
+        </article>
+        <article class="school reveal" style="--i:1">
+          <p class="dates">Aug 2020 – May 2023</p>
+          <h3>Emory University</h3>
+          <p class="degree">B.A. Computer Science, minor in Physics</p>
+          <dl class="facts">
+            <dt>Research</dt><dd>Perception and Action Lab (Dr. Chris Rodgers)</dd>
+            <dt>Coursework</dt><dd><ul class="courses"><li>Data Structures and Algorithms</li><li>Foundations of Computer Science</li><li>Systems Programming</li><li>Advanced Computer Architecture</li><li>Database Systems</li></ul></dd>
+          </dl>
+        </article>
+      </div>
     </section>
 
-    <section class="chapter end-credits" id="skills" data-label="Skills" aria-labelledby="skills-h">
+    <section class="chapter skills" id="skills" data-label="Skills" aria-labelledby="skills-h">
       <h2 class="chapter-title" id="skills-h">Skills</h2>
-      <dl class="roll">
-        <dt>Languages</dt>
-        <dd>Python, C, C++, Go, TypeScript, JavaScript, Java, C#, MATLAB, x86 assembly, SQL (PostgreSQL)</dd>
-        <dt>Security</dt>
-        <dd>Reverse engineering, firmware analysis, malware analysis, network security; IDA Pro, Ghidra, YARA, EMBA, Binwalk, QEMU, Metasploit, Snort, Nmap, Wireshark, OpenCanary, OpenSSL</dd>
-        <dt>Cloud</dt>
-        <dd>AWS (ECS Fargate, ECR, S3, CloudFormation, KMS, VPC), Docker, Cloudflare Workers</dd>
-        <dt>AI systems</dt>
-        <dd>Small language models, fine-tuning, retrieval-augmented generation, finite state machines, Petri nets, Pydantic</dd>
-        <dt>Other</dt>
-        <dd>Vue.js, ROS, HELICS, OpenGL, SFML, CUDA, OpenMP</dd>
-      </dl>
+      <div class="skill-rows">
+        <div class="skill-row reveal from-right" style="--i:0">
+          <h3>Languages</h3>
+          <ul><li>Python</li><li>C</li><li>C++</li><li>Go</li><li>TypeScript</li><li>JavaScript</li><li>Java</li><li>C#</li><li>MATLAB</li><li>X86 assembly</li><li>SQL (PostgreSQL)</li></ul>
+        </div>
+        <div class="skill-row reveal from-right" style="--i:1">
+          <h3>Security</h3>
+          <ul><li>Reverse engineering</li><li>Firmware analysis</li><li>Malware analysis</li><li>Network security</li></ul>
+        </div>
+        <div class="skill-row reveal from-right" style="--i:2">
+          <h3>Security tools</h3>
+          <ul><li>IDA Pro</li><li>Ghidra</li><li>YARA</li><li>EMBA</li><li>Binwalk</li><li>QEMU</li><li>Metasploit</li><li>Snort</li><li>Nmap</li><li>Wireshark</li><li>OpenCanary</li><li>OpenSSL</li></ul>
+        </div>
+        <div class="skill-row reveal from-right" style="--i:3">
+          <h3>Cloud</h3>
+          <ul><li>AWS (ECS Fargate, ECR, S3, CloudFormation, KMS, VPC)</li><li>Docker</li><li>Cloudflare Workers</li></ul>
+        </div>
+        <div class="skill-row reveal from-right" style="--i:4">
+          <h3>AI systems</h3>
+          <ul><li>Small language models</li><li>Fine-tuning</li><li>Retrieval-augmented generation</li><li>Finite state machines</li><li>Petri nets</li><li>Pydantic</li></ul>
+        </div>
+        <div class="skill-row reveal from-right" style="--i:5">
+          <h3>Other</h3>
+          <ul><li>Vue.js</li><li>ROS</li><li>HELICS</li><li>OpenGL</li><li>SFML</li><li>CUDA</li><li>OpenMP</li></ul>
+        </div>
+      </div>
     </section>
 
     <section class="closing" id="contact" data-label="Contact" aria-labelledby="contact-h">
