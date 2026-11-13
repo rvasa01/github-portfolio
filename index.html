@@ -14,7 +14,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Manrope:wght@400..700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..900&family=Hanken+Grotesk:wght@400..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/site.css">
   <script src="assets/js/site.js" defer></script>
 </head>
@@ -33,22 +33,43 @@
 
   <header class="bar bar-top">
     <a class="bar-name" href="#top">Rahil Vasa</a>
-    <nav aria-label="Sections">
-      <a href="#scenes">Experience</a>
-      <a href="#projects">Projects</a>
-      <a href="#credits">Education</a>
-      <a href="#contact">Contact</a>
-    </nav>
+    <button class="index-btn" type="button" aria-expanded="false" aria-controls="index-panel">
+      <span class="index-icon" aria-hidden="true"><i></i><i></i><i></i></span>Index
+    </button>
   </header>
 
+  <nav class="index-panel" id="index-panel" aria-label="Site index" hidden>
+    <ol>
+      <li><a href="#about">About</a></li>
+      <li><a href="#work">Work</a>
+        <ol>
+          <li><a href="#job-microsoft">Microsoft</a></li>
+          <li><a href="#job-startup">Stealth AI Startup</a></li>
+          <li><a href="#job-aws">Amazon Web Services</a></li>
+          <li><a href="#job-honeypot">Honeypot Technologies</a></li>
+        </ol>
+      </li>
+      <li><a href="#research">Research</a>
+        <ol>
+          <li><a href="#job-gt">Cyberphysical Systems Lab, Georgia Tech</a></li>
+          <li><a href="#job-emory">Perception and Action Lab, Emory</a></li>
+        </ol>
+      </li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ol>
+  </nav>
+
   <div class="bar bar-bottom" aria-hidden="true">
-    <p class="counter"><span class="counter-num">00</span><span class="counter-total">/ 09</span><span class="counter-name">Title card</span></p>
+    <p class="counter"><span class="counter-name">Rahil Vasa</span></p>
     <a class="bar-cta" href="#contact" tabindex="-1">Get in touch</a>
   </div>
 
   <main id="main">
 
-    <section class="title" id="top" data-scene="00" data-scene-name="Title card">
+    <section class="title" id="top" data-label="Rahil Vasa">
       <div class="title-text">
         <h1>Rahil<br>Vasa</h1>
         <p class="title-role">Software Engineer, Azure Security at&nbsp;Microsoft</p>
@@ -59,13 +80,14 @@
           <a class="link" href="https://www.linkedin.com/in/rahil-vasa-8b364a115/" target="_blank" rel="noopener">LinkedIn</a>
         </p>
       </div>
-      <figure class="title-footage">
+      <figure class="title-footage" data-summary="Conway's Game of Life: each cell lives or dies by counting its neighbors.">
+          <figcaption class="visually-hidden">Conway's Game of Life: each cell lives or dies by counting its neighbors.</figcaption>
         <canvas data-film="life" aria-hidden="true"></canvas>
-        <figcaption>Game of Life, recreated in code</figcaption>
+        <p class="subtitle" aria-hidden="true"></p>
       </figure>
     </section>
 
-    <section class="about" aria-label="About">
+    <section class="about" id="about" data-label="About" aria-label="About">
       <img src="assets/img/profile-picture-rahil.jpg" alt="Portrait of Rahil Vasa" width="598" height="598" loading="lazy">
       <div class="about-text">
         <p>I'm a software engineer on Microsoft's Azure Security team. Before that I was the founding engineer at a stealth AI startup, building a deterministic AI pipeline for lawyers and investment advisors, and I spent a summer at Amazon Web Services automating firmware vulnerability analysis across BIOS, BMC, and GPU platforms.</p>
@@ -73,23 +95,24 @@
       </div>
     </section>
 
-    <div id="scenes">
-      <h2 class="visually-hidden">Experience</h2>
+    <section class="chapter" id="work" data-label="Work" aria-labelledby="work-h">
+      <h2 class="chapter-title" id="work-h">Work</h2>
 
-      <section class="scene scene-quiet" id="job-microsoft" data-scene="01" data-scene-name="Microsoft, now">
-        <p class="slate"><span>Scene 01</span><span>Dec 2025 – Present</span></p>
+      <article class="scene scene-quiet" id="job-microsoft" data-label="Microsoft">
+        <p class="dates">Dec 2025 – Present</p>
         <div class="scene-card">
           <h3>Software Engineer, Azure Security</h3>
           <p class="org">Microsoft</p>
-          <p class="now">Now showing</p>
+          <p class="now">Current role</p>
         </div>
-      </section>
+      </article>
 
-      <section class="scene" id="job-startup" data-scene="02" data-scene-name="Stealth AI Startup, 2025">
-        <p class="slate"><span>Scene 02</span><span>Oct – Dec 2025</span></p>
-        <figure class="footage">
+      <article class="scene" id="job-startup" data-label="Stealth AI Startup">
+        <p class="dates">Oct – Dec 2025</p>
+        <figure class="footage" data-summary="A finite state machine asks one question per state, then lands on a single output.">
+          <figcaption class="visually-hidden">A finite state machine asks one question per state, then lands on a single output.</figcaption>
           <canvas data-film="fsm" aria-hidden="true"></canvas>
-          <figcaption>An FSM walking a request from intent to a single output state, recreated in code</figcaption>
+          <p class="subtitle" aria-hidden="true"></p>
         </figure>
         <div class="scene-body">
           <div class="scene-card">
@@ -106,13 +129,14 @@
             <li>Demoed the system to a client, who responded strongly to its deterministic, auditable output.</li>
           </ul>
         </div>
-      </section>
+      </article>
 
-      <section class="scene" id="job-aws" data-scene="03" data-scene-name="Amazon Web Services, 2025">
-        <p class="slate"><span>Scene 03</span><span>Jun – Aug 2025</span></p>
-        <figure class="footage">
-          <canvas data-film="scans" aria-hidden="true"></canvas>
-          <figcaption>One hundred firmware scans running side by side, recreated in code</figcaption>
+      <article class="scene" id="job-aws" data-label="Amazon Web Services">
+        <p class="dates">Jun – Aug 2025</p>
+        <figure class="footage" data-summary="Firmware images in S3 are scanned by 100 parallel ECS Fargate tasks running EMBA from ECR inside a private VPC, and findings are ranked by platform.">
+          <figcaption class="visually-hidden">Firmware images in S3 are scanned by 100 parallel ECS Fargate tasks running EMBA from ECR inside a private VPC, and findings are ranked by platform.</figcaption>
+          <canvas data-film="aws" aria-hidden="true"></canvas>
+          <p class="subtitle" aria-hidden="true"></p>
         </figure>
         <div class="scene-body">
           <div class="scene-card">
@@ -122,18 +146,19 @@
           <ul class="credits">
             <li>Performed static analysis with custom YARA rules and detection scripts to audit BMC firmware across 1.5M+ hosts, flagging weak MD5 hashing, misconfigured init-file permissions that could let attackers persist across reboots, and insecure practices in bundled open-source libraries; reported findings to owning teams for remediation.</li>
             <li>Automated firmware vulnerability analysis for embedded Linux platforms (BIOS, BMC, GPU) using EMBA, combining static analysis (Binwalk extraction, YARA rules) with dynamic analysis (QEMU emulation, fuzzing), scanning 200+ firmware images.</li>
-            <li>Built a parallel scanning pipeline on ECS Fargate, provisioned with CloudFormation inside private VPCs and orchestrated by Jenkins, running 100 firmware scans concurrently and cutting batch time from ~300 hours to ~3 hours.</li>
+            <li>Built a parallel scanning pipeline on ECS Fargate, provisioned with CloudFormation inside private VPCs, running 100 firmware scans concurrently and cutting batch time from ~300 hours to ~3 hours.</li>
             <li>Designed a firmware-type-aware prioritization framework with custom severity thresholds, ranking vulnerabilities by platform risk (BMC vs. BIOS vs. GPU); Amazon's Secure Hardware and Foundational Technologies (SHAFT) team used it to decide which vulnerabilities to fix first.</li>
             <li>My scanner, pipeline, and prioritization framework were packaged into an internal software tool that is now used by multiple teams across Amazon and actively maintained and extended by a dedicated software team.</li>
           </ul>
         </div>
-      </section>
+      </article>
 
-      <section class="scene" id="job-honeypot" data-scene="04" data-scene-name="Honeypot Technologies, 2024–25">
-        <p class="slate"><span>Scene 04</span><span>May 2024 – Apr 2025</span></p>
-        <figure class="footage">
-          <canvas data-film="traffic" aria-hidden="true"></canvas>
-          <figcaption>Website traffic with flagged visitors held at the edge, recreated in code</figcaption>
+      <article class="scene" id="job-honeypot" data-label="Honeypot Technologies">
+        <p class="dates">May 2024 – Apr 2025</p>
+        <figure class="footage" data-summary="Attackers scan the network; probes that pass the firewall hit decoy honeypots, which report telemetry to the monitoring server.">
+          <figcaption class="visually-hidden">Attackers scan the network; probes that pass the firewall hit decoy honeypots, which report telemetry to the monitoring server.</figcaption>
+          <canvas data-film="honeypot" aria-hidden="true"></canvas>
+          <p class="subtitle" aria-hidden="true"></p>
         </figure>
         <div class="scene-body">
           <div class="scene-card">
@@ -155,13 +180,18 @@
             </ul>
           </div>
         </div>
-      </section>
+      </article>
+    </section>
 
-      <section class="scene" id="job-gt" data-scene="05" data-scene-name="Cyberphysical Systems Lab, 2023">
-        <p class="slate"><span>Scene 05</span><span>Aug – Dec 2023</span></p>
-        <figure class="footage">
-          <canvas data-film="robot" aria-hidden="true"></canvas>
-          <figcaption>A robot following commands across a grid, recreated in code</figcaption>
+    <section class="chapter" id="research" data-label="Research" aria-labelledby="research-h">
+      <h2 class="chapter-title" id="research-h">Research</h2>
+
+      <article class="scene" id="job-gt" data-label="Cyberphysical Systems Lab, Georgia Tech">
+        <p class="dates">Aug – Dec 2023</p>
+        <figure class="footage" data-summary="A grid energy simulation exchanges data with ROS through HELICS, and the energy data drives how a line robot moves along the power lines.">
+          <figcaption class="visually-hidden">A grid energy simulation exchanges data with ROS through HELICS, and the energy data drives how a line robot moves along the power lines.</figcaption>
+          <canvas data-film="gridbot" aria-hidden="true"></canvas>
+          <p class="subtitle" aria-hidden="true"></p>
         </figure>
         <div class="scene-body">
           <div class="scene-card">
@@ -174,13 +204,14 @@
             <li>Planned and assigned work in Jira around each member's strengths, ran team meetings, and documented results in an IEEE-format research paper.</li>
           </ul>
         </div>
-      </section>
+      </article>
 
-      <section class="scene" id="job-emory" data-scene="06" data-scene-name="Perception and Action Lab, 2022–23">
-        <p class="slate"><span>Scene 06</span><span>Aug 2022 – Mar 2023</span></p>
-        <figure class="footage">
+      <article class="scene" id="job-emory" data-label="Perception and Action Lab, Emory">
+        <p class="dates">Aug 2022 – Mar 2023</p>
+        <figure class="footage" data-summary="Decision data fills a histogram, then a normal curve is fitted over it.">
+          <figcaption class="visually-hidden">Decision data fills a histogram, then a normal curve is fitted over it.</figcaption>
           <canvas data-film="fit" aria-hidden="true"></canvas>
-          <figcaption>Fitting a distribution to decision data, recreated in code</figcaption>
+          <p class="subtitle" aria-hidden="true"></p>
         </figure>
         <div class="scene-body">
           <div class="scene-card">
@@ -192,14 +223,18 @@
             <li>Identified the statistical distribution that best fit the data, then cleaned and pre-processed it as input for a neural network.</li>
           </ul>
         </div>
-      </section>
-    </div>
+      </article>
+    </section>
 
-    <section class="projects" id="projects" data-scene="07" data-scene-name="Projects" aria-labelledby="proj-h">
-      <h2 class="section-title" id="proj-h">Projects</h2>
+    <section class="chapter projects" id="projects" data-label="Projects" aria-labelledby="proj-h">
+      <h2 class="chapter-title" id="proj-h">Projects</h2>
       <ul class="reels">
         <li class="reel">
-          <canvas data-film="life" aria-hidden="true"></canvas>
+          <figure data-summary="The Game of Life grid updating every generation.">
+          <figcaption class="visually-hidden">The Game of Life grid updating every generation.</figcaption>
+            <canvas data-film="life" aria-hidden="true"></canvas>
+            <p class="subtitle" aria-hidden="true"></p>
+          </figure>
           <div>
             <h3><a href="https://github.com/rvasa01/Game-of-Life-using-CUDA" target="_blank" rel="noopener">Game of Life on the GPU with CUDA</a></h3>
             <p>Conway's Game of Life running in parallel on the GPU, comparing how normal, pinned, and managed CUDA memory affect simulation speed.</p>
@@ -207,7 +242,11 @@
           </div>
         </li>
         <li class="reel">
-          <canvas data-film="threads" aria-hidden="true"></canvas>
+          <figure data-summary="The grid split into four strips, one per thread.">
+          <figcaption class="visually-hidden">The grid split into four strips, one per thread.</figcaption>
+            <canvas data-film="threads" aria-hidden="true"></canvas>
+            <p class="subtitle" aria-hidden="true"></p>
+          </figure>
           <div>
             <h3><a href="https://github.com/rvasa01/Game-of-Life-Multithreading-and-OpenMP" target="_blank" rel="noopener">Game of Life with threads and OpenMP</a></h3>
             <p>The same cellular automaton parallelized on the CPU, using std::thread and OpenMP to split a computationally heavy grid across cores.</p>
@@ -215,7 +254,11 @@
           </div>
         </li>
         <li class="reel">
-          <canvas data-film="robot" aria-hidden="true"></canvas>
+          <figure data-summary="A client sends move commands over UDP and the server moves the robot on a grid.">
+          <figcaption class="visually-hidden">A client sends move commands over UDP and the server moves the robot on a grid.</figcaption>
+            <canvas data-film="robot" aria-hidden="true"></canvas>
+            <p class="subtitle" aria-hidden="true"></p>
+          </figure>
           <div>
             <h3><a href="https://github.com/rvasa01/Robot-Movement-Simulation-UDP-Socket-Programming" target="_blank" rel="noopener">Robot movement over UDP sockets</a></h3>
             <p>A client sends motion commands over UDP; the server moves a robot across a 2D grid and renders it with SFML.</p>
@@ -223,7 +266,9 @@
           </div>
         </li>
         <li class="reel">
-          <img src="assets/img/reel/centipede.jpg" alt="Screenshot of the Centipede game's start screen" loading="lazy" class="still still-centipede">
+          <figure>
+            <img src="assets/img/reel/centipede.jpg" alt="Screenshot of the Centipede game's start screen" loading="lazy" class="still still-centipede">
+          </figure>
           <div>
             <h3><a href="https://github.com/rvasa01/Retro-Centipede-Arcade-Game-SFML" target="_blank" rel="noopener">Centipede arcade game</a></h3>
             <p>A simplified take on the classic arcade game, built with SFML 2D graphics and a class-based C++ design.</p>
@@ -231,7 +276,9 @@
           </div>
         </li>
         <li class="reel">
-          <img src="assets/img/reel/netpbm.jpg" alt="Sample PBM, PGM, and PPM files shown as text" loading="lazy" class="still still-netpbm">
+          <figure>
+            <img src="assets/img/reel/netpbm.jpg" alt="Sample PBM, PGM, and PPM files shown as text" loading="lazy" class="still still-netpbm">
+          </figure>
           <div>
             <h3><a href="https://github.com/rvasa01/Converting-between-PBM-PGM-and-PPM-images" target="_blank" rel="noopener">Converting between PBM, PGM, and PPM images</a></h3>
             <p>A C command-line tool that converts between the three Netpbm formats by operating on pixels in dynamically allocated 2D arrays.</p>
@@ -242,8 +289,8 @@
       <p class="more"><a class="link" href="https://github.com/rvasa01?tab=repositories" target="_blank" rel="noopener">More on GitHub</a></p>
     </section>
 
-    <section class="end-credits" id="credits" data-scene="08" data-scene-name="Education" aria-labelledby="credits-h">
-      <h2 class="section-title" id="credits-h">Education</h2>
+    <section class="chapter end-credits" id="education" data-label="Education" aria-labelledby="edu-h">
+      <h2 class="chapter-title" id="edu-h">Education</h2>
       <dl class="roll roll-edu">
         <dt>Georgia Institute of Technology</dt>
         <dd><strong>B.S. Computer Engineering, minor in Artificial Intelligence</strong><span>Aug 2023 – May 2025</span></dd>
@@ -262,15 +309,17 @@
         <dt>Research</dt>
         <dd>Perception and Action Lab (Dr. Chris Rodgers)</dd>
       </dl>
+    </section>
 
-      <h2 class="section-title" id="skills">Skills</h2>
+    <section class="chapter end-credits" id="skills" data-label="Skills" aria-labelledby="skills-h">
+      <h2 class="chapter-title" id="skills-h">Skills</h2>
       <dl class="roll">
         <dt>Languages</dt>
         <dd>Python, C, C++, Go, TypeScript, JavaScript, Java, C#, MATLAB, x86 assembly, SQL (PostgreSQL)</dd>
         <dt>Security</dt>
         <dd>Reverse engineering, firmware analysis, malware analysis, network security; IDA Pro, Ghidra, YARA, EMBA, Binwalk, QEMU, Metasploit, Snort, Nmap, Wireshark, OpenCanary, OpenSSL</dd>
         <dt>Cloud</dt>
-        <dd>AWS (ECS Fargate, ECR, CloudFormation, KMS, VPC), Docker, Jenkins, Cloudflare Workers</dd>
+        <dd>AWS (ECS Fargate, ECR, S3, CloudFormation, KMS, VPC), Docker, Cloudflare Workers</dd>
         <dt>AI systems</dt>
         <dd>Small language models, fine-tuning, retrieval-augmented generation, finite state machines, Petri nets, Pydantic</dd>
         <dt>Other</dt>
@@ -278,7 +327,7 @@
       </dl>
     </section>
 
-    <section class="closing" id="contact" data-scene="09" data-scene-name="Contact" aria-labelledby="contact-h">
+    <section class="closing" id="contact" data-label="Contact" aria-labelledby="contact-h">
       <h2 id="contact-h">Let's talk.</h2>
       <p>The fastest way to reach me is email. I'm also happy to connect on LinkedIn.</p>
       <p class="closing-actions">
