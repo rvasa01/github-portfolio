@@ -1076,6 +1076,12 @@
     const cs = getComputedStyle(face), flip = face.querySelector(".flip-btn");
     const avail = face.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
       - (flip && flip.offsetParent ? flip.getBoundingClientRect().height + parseFloat(getComputedStyle(flip).marginTop) : 0);
+    // project previews are sized from the card's height so the 16:9 frame always fits
+    const rp = pg.classList.contains("reel") && box.querySelector(".peek");
+    if (rp) {
+      const call = rp.querySelector(".peek-call").getBoundingClientRect().height;
+      rp.style.width = Math.max(240, Math.floor((avail - call - 10 - 22) * 16 / 9 + 22)) + "px";
+    }
     const fits = (z) => { inner.style.zoom = String(z); return box.getBoundingClientRect().height <= avail + 1; };
     if (fits(1)) { inner.style.zoom = ""; return; }
     // largest size that still fits (text reflows as it shrinks, so search rather than scale)
@@ -1160,9 +1166,13 @@
       // live preview of the diagram, top right of the front: the motion is the cue
       const peek = document.createElement("button");
       peek.type = "button"; peek.className = "peek"; peek.setAttribute("aria-label", flipText);
-      const tc = document.createElement("canvas"); tc.setAttribute("aria-hidden", "true");
-      peek.append(tc);
-      peek.insertAdjacentHTML("beforeend", `<span class="peek-label"><span>${isProj ? "See it run" : "See it in action"}</span><i aria-hidden="true">&#8635;</i></span>`);
+      peek.innerHTML = `<span class="peek-call" aria-hidden="true">
+          <span class="peek-title">${isProj ? "See it run" : "See it in action"}</span>
+          <span class="peek-sub">Click to flip the card</span>
+          <svg class="peek-arrow peek-r" viewBox="0 0 64 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 26 C 18 6, 40 4, 58 16"/><path d="M48 9 L58 16 L47 21"/></svg>
+          <svg class="peek-arrow peek-d" viewBox="0 0 40 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 4 C 30 10, 32 26, 24 42"/><path d="M17 34 L24 43 L31 35"/></svg>
+        </span><span class="peek-frame"><canvas aria-hidden="true"></canvas></span>`;
+      const tc = peek.querySelector("canvas");
       const headRow = document.createElement("div"); headRow.className = "front-head";
       const left = document.createElement("div"); left.className = "front-head-text";
       const sceneCard = box.querySelector(".scene-card");
