@@ -1072,24 +1072,12 @@
     if (narrowScreen()) { const w = stage.clientWidth; cv.style.width = w + "px"; cv.style.height = Math.round(w / r) + "px"; return; }
     const sw = stage.clientWidth, sh = stage.clientHeight;
     let w = Math.min(sw, sh * r);
-    const min = Math.min(sw, 640);
+    const min = Math.min(sw, 560);
     if (w < min) { pg.style.height = pg.offsetHeight + Math.ceil(min / r - sh) + "px"; w = min; }
     cv.style.width = Math.floor(w) + "px"; cv.style.height = Math.floor(w / r) + "px";
-    // the step list must fit beside the diagram too; tallest case is the longest description open
+    // the step list scrolls in its own column if it is taller than the diagram area
     const ol = pg.querySelector(".back .steps");
-    if (ol) {
-      const cur = ol.querySelector('[aria-current="step"]');
-      let tallest = ol.scrollHeight;
-      ol.querySelectorAll("li").forEach((li) => {
-        if (li === cur) return;
-        cur?.removeAttribute("aria-current"); li.setAttribute("aria-current", "step");
-        tallest = Math.max(tallest, ol.scrollHeight);
-        li.removeAttribute("aria-current");
-      });
-      cur?.setAttribute("aria-current", "step");
-      const room = stage.clientHeight;
-      if (tallest > room) pg.style.height = pg.offsetHeight + Math.ceil(tallest - room) + "px";
-    }
+    if (ol) ol.style.maxHeight = stage.clientHeight + "px";
   };
 
   document.querySelectorAll("[data-carousel]").forEach((track) => {
