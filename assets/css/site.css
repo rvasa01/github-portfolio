@@ -505,6 +505,35 @@ html { scroll-snap-type: y mandatory; scroll-padding-top: var(--bar); scroll-pad
   .back .fig-stage { flex: none; display: block; }
 }
 
+/* Side tabs in the page margins (wide screens) */
+.page { position: relative; }
+.side-tab {
+  position: absolute; top: 50%; z-index: 2; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  width: 44px; min-height: 150px; padding: 16px 0; transform: translate(50%, -50%);
+  font: 500 13px var(--text); letter-spacing: 0.02em; transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.side-tab span { writing-mode: vertical-rl; white-space: nowrap; }
+.side-tab i { font-style: normal; font-size: 18px; transition: transform 0.25s var(--ease); }
+.side-next { right: calc(var(--pad) / 2); background: var(--accent); color: var(--frame); border: 0; }
+.side-next:hover { background: var(--bone); }
+.side-next:hover i { transform: translateX(3px); }
+.side-prev { left: calc(var(--pad) / 2); transform: translate(-50%, -50%); background: var(--frame); color: var(--dim); border: 1px solid var(--line); }
+.side-prev span { transform: rotate(180deg); }
+.side-prev:hover { color: var(--bone); border-color: var(--bone); }
+.side-prev:hover i { transform: translateX(-3px); }
+.reel.page .side-next { right: calc(-1 * var(--pad) / 2); }
+.reel.page .side-prev { left: calc(-1 * var(--pad) / 2); }
+.side-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.side-tab[hidden] { display: none; }
+@media (min-width: 1100px) {
+  .page .slide-foot .foot-next, .page .slide-foot .foot-prev { display: none; }
+  .page .slide-foot:not(:has(.more)) { display: none; }
+}
+@media (max-width: 1099px) {
+  .side-tab { display: none !important; }
+}
+
 /* Under every card: Previous on the left, a big Next on the right */
 .slide-foot { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; }
 .foot-next {

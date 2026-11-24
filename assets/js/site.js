@@ -1166,6 +1166,12 @@
     foot.innerHTML = `<button type="button" class="foot-prev"></button>
       <button type="button" class="foot-next"><small></small><span></span><i aria-hidden="true">&rarr;</i></button>`;
     const more = section.querySelector(".more");
+    // wide screens: slim tabs in the side margins instead of a row under the card
+    const sPrev = document.createElement("button"), sNext = document.createElement("button");
+    sPrev.type = sNext.type = "button";
+    sPrev.className = "side-tab side-prev"; sNext.className = "side-tab side-next";
+    sPrev.addEventListener("click", () => step(-1));
+    sNext.addEventListener("click", () => step(1));
 
     const count = nav.querySelector(".slide-count");
     const prev = nav.querySelector(".slide-prev"), next = nav.querySelector(".slide-next");
@@ -1200,6 +1206,12 @@
       const lastPage = pagesOf[i][pagesOf[i].length - 1];
       lastPage.querySelector(".card")?.unflip?.();
       lastPage.append(foot);
+      sPrev.hidden = i === 0;
+      if (i > 0) { sPrev.innerHTML = `<i aria-hidden="true">&larr;</i><span>${name(slides[i - 1])}</span>`; sPrev.setAttribute("aria-label", `Previous ${noun}: ${full(slides[i - 1])}`); }
+      sNext.hidden = last && !after;
+      sNext.innerHTML = last ? `<span>${afterName}</span><i aria-hidden="true">&darr;</i>` : `<span>Next &middot; ${name(slides[i + 1])}</span><i aria-hidden="true">&rarr;</i>`;
+      sNext.setAttribute("aria-label", last ? `Continue to ${afterName}` : `Next ${noun}: ${full(slides[i + 1])}`);
+      lastPage.append(sPrev, sNext);
       if (more) fPrev.after(more);
       refit();
       dispatchEvent(new Event("resize"));
