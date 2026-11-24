@@ -1049,6 +1049,22 @@
   // pages (the write-up, then its diagram) and the page snaps so a scroll always lands
   // on exactly one of them. A sticky bar names every entry and carries Next.
   const carousels = [];
+  const peeks = [];
+  // copy each live diagram into its preview window while the card shows its front
+  const drawPeeks = () => {
+    for (const { tc, src, card } of peeks) {
+      if (!card.offsetParent || card.classList.contains("is-flipped") || src.width < 2) continue;
+      const r = tc.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight || r.width < 2) continue;
+      const dpr = Math.min(devicePixelRatio || 1, 2), W = Math.round(r.width * dpr), H = Math.round(W * src.height / src.width);
+      if (tc.width !== W || tc.height !== H) { tc.width = W; tc.height = H; tc.style.height = H / dpr + "px"; }
+      const c2 = tc.getContext("2d");
+      c2.fillStyle = C.bg; c2.fillRect(0, 0, W, H);
+      c2.drawImage(src, 0, 0, W, H);
+    }
+    requestAnimationFrame(drawPeeks);
+  };
+  requestAnimationFrame(drawPeeks);
   const barH = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--bar")) || 56;
   const minZoom = () => (innerWidth < 700 ? 0.86 : 0.74);
   // Shrink a page's text until it fits the screen (down to a readable floor).
@@ -1059,7 +1075,7 @@
     inner.style.zoom = ""; inner.classList.remove("scrolls");
     const cs = getComputedStyle(face), flip = face.querySelector(".flip-btn");
     const avail = face.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
-      - (flip ? flip.getBoundingClientRect().height + parseFloat(getComputedStyle(flip).marginTop) : 0);
+      - (flip && flip.offsetParent ? flip.getBoundingClientRect().height + parseFloat(getComputedStyle(flip).marginTop) : 0);
     const fits = (z) => { inner.style.zoom = String(z); return box.getBoundingClientRect().height <= avail + 1; };
     if (fits(1)) { inner.style.zoom = ""; return; }
     // largest size that still fits (text reflows as it shrinks, so search rather than scale)
@@ -1141,6 +1157,19 @@
       flip.type = "button"; flip.className = "flip-btn";
       flip.innerHTML = `<span>${flipText}</span><i aria-hidden="true">&#8635;</i>`;
       front.append(flip);
+      // live preview of the diagram, top right of the front: the motion is the cue
+      const peek = document.createElement("button");
+      peek.type = "button"; peek.className = "peek"; peek.setAttribute("aria-label", flipText);
+      const tc = document.createElement("canvas"); tc.setAttribute("aria-hidden", "true");
+      peek.append(tc);
+      peek.insertAdjacentHTML("beforeend", `<span class="peek-label"><span>${isProj ? "See it run" : "See it in action"}</span><i aria-hidden="true">&#8635;</i></span>`);
+      const headRow = document.createElement("div"); headRow.className = "front-head";
+      const left = document.createElement("div"); left.className = "front-head-text";
+      const sceneCard = box.querySelector(".scene-card");
+      if (sceneCard) { const dates = box.querySelector(":scope > .dates"); if (dates) left.append(dates); left.append(sceneCard); }
+      else { const txt = box.querySelector(":scope > div"); if (txt) left.append(txt); }
+      headRow.append(left, peek); box.prepend(headRow);
+      peeks.push({ tc, src: cv, card });
       const set = (on, kb) => {
         card.classList.toggle("is-flipped", on);
         front.inert = on; back.inert = !on;
@@ -1151,6 +1180,7 @@
       card.unflip = () => { card.classList.remove("is-flipped"); front.inert = false; back.inert = true; back.setAttribute("aria-hidden", "true"); front.setAttribute("aria-hidden", "false"); };
       card.unflip();
       flip.addEventListener("click", (e) => set(true, e.detail === 0));
+      peek.addEventListener("click", (e) => set(true, e.detail === 0));
       unflip.addEventListener("click", (e) => set(false, e.detail === 0));
       return [page];
     });
