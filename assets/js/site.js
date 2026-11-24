@@ -3,11 +3,17 @@
   document.documentElement.classList.add("js");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // One accent. Red marks only the thing that is happening right now.
+  // One accent. Navy marks only the thing that is happening right now.
   const C = {
-    bg: "#0a0a0a", ink: "#ece8e1", dim: "#a39e95", faint: "#7d7870", line: "#625f5a",
-    hair: "#2e2c29", fill: "#111110", red: "#e04a2f",
+    bg: "#f3eee4", ink: "#1b1a18", dim: "#5a554d", faint: "#7b756b", line: "#a49d90",
+    hair: "#d6cebf", fill: "#e9e2d4", red: "#1f3a5f", hot: "#dbe2ea", block: "#c9c1b2",
   };
+  // Colours live in CSS custom properties; the films read them so a theme change reaches the canvas.
+  {
+    const cs = getComputedStyle(document.documentElement);
+    const map = { bg: "--frame", ink: "--bone", dim: "--dim", faint: "--faint", line: "--line", hair: "--hair", fill: "--panel", red: "--accent", hot: "--hot", block: "--block" };
+    for (const k in map) { const v = cs.getPropertyValue(map[k]).trim(); if (v) C[k] = v; }
+  }
   const SANS = '"Schibsted Grotesk", system-ui, sans-serif';
   const MONO = '"Fragment Mono", ui-monospace, Menlo, monospace';
 
@@ -213,8 +219,11 @@
           const { i, p, done, run } = where();
           const f = fs(w, 15), m = clamp(w * 0.03, 12, 32), narrow = w < 560;
 
+          // Wide: clock and the question sit in a left column so the graph gets the full height.
+          const side = !narrow, sw = side ? clamp(w * 0.24, 180, 270) : 0;
           // clock
-          const cr = clamp(h * 0.065, 14, 28), cx = w - m - cr, cy = m + cr;
+          const cr = side ? clamp(h * 0.07, 16, 26) : clamp(h * 0.065, 14, 28);
+          const cx = side ? m + cr : w - m - cr, cy = m + cr;
           ctx.beginPath(); ctx.arc(cx, cy, cr, 0, Math.PI * 2); ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.stroke();
           for (let k = 0; k < N; k++) {
             const a = -Math.PI / 2 + (k / N) * Math.PI * 2;
@@ -222,12 +231,15 @@
           }
           const ha = -Math.PI / 2 + ((i + (done ? 1 : p)) / N) * Math.PI * 2;
           line(ctx, [[cx, cy], [cx + Math.cos(ha) * (cr - 8), cy + Math.sin(ha) * (cr - 8)]], C.red, 1.5);
-          if (!narrow) text(ctx, `clock tick ${done ? N : i + 1} / ${N}`, cx - cr - 12, cy + 4, { mono: true, size: 11, align: "right", color: C.dim });
+          if (side) text(ctx, `clock tick ${done ? N : i + 1} / ${N}`, cx + cr + 12, cy + 4, { mono: true, size: 11, color: C.dim });
 
-          // question card, top left
-          const cw = narrow ? w - 3 * m - 2 * cr : Math.min(w * 0.46, 460), ch = narrow ? 50 : 64;
-          frame(ctx, m, m, cw, ch, { kind: "ticks", fill: C.fill });
-          const lx = m + 12, vx = lx + (narrow ? 40 : 52), r1 = m + (narrow ? 20 : 26), r2 = r1 + (narrow ? 19 : 24), fq = narrow ? 12 : f;
+          // question card: top left (narrow) or under the clock (wide), labels above values
+          const cw = side ? sw : w - 3 * m - 2 * cr, ch = side ? 104 : 50;
+          const cardY = side ? cy + cr + 22 : m;
+          frame(ctx, m, cardY, cw, ch, { kind: "ticks", fill: C.fill });
+          const lx = m + 12, fq = side ? clamp(f, 13, 16) : 12;
+          const L1 = side ? cardY + 22 : m + 20, V1 = side ? [lx, cardY + 42] : [lx + 40, m + 20];
+          const L2 = side ? cardY + 68 : m + 39, V2 = side ? [lx, cardY + 88] : [lx + 40, m + 39];
           // Timeline of one step: ask from the current state, take the answer,
           // show the possible branches, then the transition fires along the chosen one.
           const last = i === N - 1;
@@ -235,27 +247,28 @@
           const arrived = done || p >= 0.96;
           const cur = arrived ? i : i - 1; // column of the state the machine is in
           if (done) {
-            text(ctx, "output", lx, r1, { mono: true, size: 10, color: C.red });
-            text(ctx, "One report for this route", vx, r1, { size: fq });
-            text(ctx, "same answers, same route", lx, r2, { mono: true, size: 10, color: C.dim });
+            text(ctx, "output", lx, L1, { mono: true, size: 10, color: C.red });
+            text(ctx, "One report for this route", V1[0], V1[1], { size: fq });
+            text(ctx, "same answers, same route", lx, L2, { mono: true, size: 10, color: C.dim });
           } else if (last) {
-            text(ctx, "state", lx, r1, { mono: true, size: 10, color: C.dim });
-            text(ctx, "Every question answered", vx, r1, { size: fq });
-            text(ctx, "next", lx, r2, { mono: true, size: 10, color: C.red });
-            text(ctx, p >= fireAt ? "Generating the report" : "", vx, r2, { size: fq, color: C.dim });
+            text(ctx, "state", lx, L1, { mono: true, size: 10, color: C.dim });
+            text(ctx, "Every question answered", V1[0], V1[1], { size: fq });
+            text(ctx, "next", lx, L2, { mono: true, size: 10, color: C.red });
+            text(ctx, p >= fireAt ? "Generating the report" : "", V2[0], V2[1], { size: fq, color: C.dim });
           } else {
             const S = STAGES[i], ans = S.opts[run[i]];
             const qn = Math.floor(S.q.length * clamp(p / 0.22, 0, 1));
             const an = Math.floor(ans.length * clamp((p - 0.28) / 0.2, 0, 1));
-            text(ctx, "asks", lx, r1, { mono: true, size: 10, color: C.red });
-            text(ctx, S.q.slice(0, qn), vx, r1, { size: fq });
-            text(ctx, "user", lx, r2, { mono: true, size: 10, color: C.dim });
-            text(ctx, ans.slice(0, an), vx, r2, { size: fq, color: C.dim });
+            text(ctx, "asks", lx, L1, { mono: true, size: 10, color: C.red });
+            text(ctx, S.q.slice(0, qn), V1[0], V1[1], { size: fq });
+            text(ctx, "user", lx, L2, { mono: true, size: 10, color: C.dim });
+            text(ctx, ans.slice(0, an), V2[0], V2[1], { size: fq, color: C.dim });
           }
 
           // graph
-          const gTop = m + ch + (narrow ? 26 : 44), gBot = h - m - (narrow ? 6 : 14);
-          const colX = STAGES.map((_, k) => m + 30 + (k * (w - 2 * m - 60)) / (N - 1));
+          const gTop = side ? m + 14 : m + ch + 26, gBot = h - m - (side ? 10 : 6);
+          const gx0 = side ? m + sw + 72 : m + 30, gx1 = w - m - 30;
+          const colX = STAGES.map((_, k) => gx0 + (k * (gx1 - gx0)) / (N - 1));
           const rowGap = (gBot - gTop - 18) / 3;
           const r = clamp(Math.min(rowGap * 0.28, (colX[1] - colX[0]) * 0.16), 9, 26);
           const midY = gTop + 18 + rowGap * 1.5;
@@ -331,11 +344,14 @@
           const ph = ck.ph(), pp = ck.pp();
           const f = fs(w, 15), narrow = w < 560, m = 14, lbl = 11;
           let s3, ecr, vpc, out;
+          // labels pick the longest wording that fits their box
+          const pick = (opts, max, o) => opts.find((t) => measure(ctx, t, o) <= max) ?? opts[opts.length - 1];
+          const lo = { mono: true, size: lbl };
           if (!narrow) {
             s3 = { x: m, y: h * 0.08, w: w * 0.19, h: h * 0.5 };
             ecr = { x: m, y: h * 0.66, w: w * 0.19, h: Math.min(h * 0.26, f + 52) };
-            vpc = { x: w * 0.26, y: h * 0.05, w: w * 0.49, h: h * 0.9 };
-            out = { x: w * 0.79, y: 0, w: w * 0.21 - m, h: Math.min(h * 0.7, f + 46 + 3 * 34) };
+            vpc = { x: w * 0.25, y: h * 0.05, w: w * 0.46, h: h * 0.9 };
+            out = { x: w * 0.75, y: 0, w: w * 0.25 - m, h: Math.min(h * 0.7, f + 46 + 3 * 34) };
             out.y = (h - out.h) / 2;
           } else {
             s3 = { x: m, y: m, w: w * 0.3, h: h * 0.27 };
@@ -359,19 +375,22 @@
           // ECR
           frame(ctx, ecr.x, ecr.y, ecr.w, ecr.h, { active: ph === 1 });
           text(ctx, "ECR", ecr.x + 10, ecr.y + f + 8, { size: f + 1 });
-          text(ctx, narrow ? "emba image" : "emba scanner image", ecr.x + 10, ecr.y + f + 26, { mono: true, size: lbl, color: C.dim });
+          text(ctx, pick(["emba scanner image", "emba image", "emba"], ecr.w - 20, lo), ecr.x + 10, ecr.y + f + 26, { mono: true, size: lbl, color: C.dim });
           // VPC
           frame(ctx, vpc.x, vpc.y, vpc.w, vpc.h, { kind: "dashed", color: ph >= 1 ? C.dim : C.line });
           text(ctx, "Private VPC", vpc.x + 12, vpc.y + f + 8, { size: f });
-          text(ctx, narrow ? "cfn" : "cloudformation", vpc.x + vpc.w - 12, vpc.y + f + 6, { mono: true, size: lbl, align: "right", color: C.dim });
-          text(ctx, narrow ? "100 tasks" : "ecs fargate · 100 tasks", vpc.x + 12, vpc.y + f * 2 + 18, { mono: true, size: lbl, color: C.dim });
+          text(ctx, pick(["cloudformation", "cfn"], vpc.w - 40 - measure(ctx, "Private VPC", { size: f }), lo), vpc.x + vpc.w - 12, vpc.y + f + 6, { mono: true, size: lbl, align: "right", color: C.dim });
+          text(ctx, pick(["ecs fargate · 100 tasks", "fargate · 100 tasks", "100 tasks"], vpc.w - 24, lo), vpc.x + 12, vpc.y + f * 2 + 18, { mono: true, size: lbl, color: C.dim });
           // legend
           const ly = vpc.y + vpc.h - 12;
           ctx.fillStyle = C.faint; ctx.fillRect(vpc.x + 12, ly - 8, 14, 3);
-          text(ctx, narrow ? "static" : "static · binwalk, yara", vpc.x + 32, ly, { mono: true, size: lbl - 1, color: C.dim });
-          const lx2 = vpc.x + 12 + (narrow ? 82 : Math.min(220, vpc.w * 0.5));
+          const lg = { mono: true, size: lbl - 1 };
+          const legends = [["static · binwalk, yara", "dynamic · qemu, fuzzing"], ["static · yara", "dynamic · qemu"], ["static", "dynamic"]];
+          const [ls, ld] = legends.find(([a, b]) => 20 + measure(ctx, a, lg) + 28 + 20 + measure(ctx, b, lg) <= vpc.w - 24) ?? legends[2];
+          text(ctx, ls, vpc.x + 32, ly, { ...lg, color: C.dim });
+          const lx2 = vpc.x + 32 + measure(ctx, ls, lg) + 28;
           ctx.fillStyle = C.ink; ctx.fillRect(lx2, ly - 8, 14, 3);
-          text(ctx, narrow ? "dynamic" : "dynamic · qemu, fuzzing", lx2 + 20, ly, { mono: true, size: lbl - 1, color: C.dim });
+          text(ctx, ld, lx2 + 20, ly, { ...lg, color: C.dim });
           // 10 x 10 tasks, each an EMBA run with a static and a dynamic half
           const gx = vpc.x + 12, gy = vpc.y + f * 2 + 30, gw = vpc.w - 24, gh = ly - 22 - gy;
           const tw = gw / 10, th = gh / 10;
@@ -400,11 +419,12 @@
           // prioritization
           frame(ctx, out.x, out.y, out.w, out.h, { active: ph === 3 });
           text(ctx, "Prioritize", out.x + 10, out.y + f + 8, { size: f + 1 });
-          text(ctx, narrow ? "by type" : "by vulnerability type", out.x + 10, out.y + f + 26, { mono: true, size: lbl, color: C.dim });
+          text(ctx, pick(["by vulnerability type", "by vuln type", "by type"], out.w - 20, lo), out.x + 10, out.y + f + 26, { mono: true, size: lbl, color: C.dim });
           // ranked by type of finding, most urgent first
-          const bars = narrow
-            ? [["CWEs over threshold", 0.92, C.red], ["Weak hashes", 0.64, C.ink], ["Permissive files", 0.42, C.dim]]
-            : [["CWEs above severity threshold", 0.92, C.red], ["Weak hashes (MD5)", 0.64, C.ink], ["Overly permissive files", 0.42, C.dim]];
+          const nameSize = narrow ? 11 : 12, room = out.w - 20 - 24;
+          const sets = [["CWEs above severity threshold", "Weak hashes (MD5)", "Overly permissive files"], ["CWEs over threshold", "Weak hashes", "Permissive files"], ["CWEs", "Weak hashes", "Permissive"]];
+          const names = sets.find((st) => st.every((t) => measure(ctx, t, { size: nameSize }) <= room)) ?? sets[2];
+          const bars = [[names[0], 0.92, C.red], [names[1], 0.64, C.ink], [names[2], 0.42, C.dim]];
           const bx = out.x + 10, bw = out.w - 20, by0 = out.y + f + 46, rowH = narrow ? 30 : 34;
           bars.forEach(([name, v, col], k) => {
             const y = by0 + k * rowH, grow = ph === 3 ? ease(pp * 1.6 - k * 0.15) : 0;
@@ -693,7 +713,7 @@
           const cs = stack ? clamp((cl.h - 24) / 2 - 2, 14, 24) : Math.min(30, (cl.w - 20 - 16) / 5);
           caps.forEach(([c, cx, cy]) => {
             const x = cl.x + 10 + cx * (cs + 4), y = cl.y + 10 + cy * (cs + 4), hot = c === key && st === 0;
-            frame(ctx, x, y, cs, cs, { color: hot ? C.red : C.line, fill: hot ? "#2a120d" : null });
+            frame(ctx, x, y, cs, cs, { color: hot ? C.red : C.line, fill: hot ? C.hot : null });
             text(ctx, c, x + cs / 2, y + cs / 2 + 1, { mono: true, upper: false, size: 11, align: "center", base: "middle", color: hot ? C.red : C.dim });
           });
           const lh = 17, logX = stack ? cl.x + 10 + 5 * (cs + 4) + 8 : cl.x + 10;
@@ -914,7 +934,7 @@
             const bh = ((base - top) * b) / max, tail = i < 4 || i > 23;
             const x = x0 + i * bw + 1, y = base - bh;
             if (k === 2 && tail) frame(ctx, x, y, bw - 2, bh, { kind: "dashed", color: C.hair });
-            else { ctx.fillStyle = "#3a3834"; ctx.fillRect(x, y, bw - 2, bh); ctx.fillStyle = C.dim; ctx.fillRect(x, y, bw - 2, 1); }
+            else { ctx.fillStyle = C.block; ctx.fillRect(x, y, bw - 2, bh); ctx.fillStyle = C.dim; ctx.fillRect(x, y, bw - 2, 1); }
           });
           const prog = k === 0 ? 0 : k === 1 ? ease(((t % P) / P) * 1.4) : 1;
           if (prog > 0) {
@@ -997,7 +1017,7 @@
     resizeTimer = setTimeout(() => players.forEach((p) => p.film.draw()), 150);
   });
 
-  // ---------- slide-in for education and skills ----------
+  // ---------- slide-in reveals ----------
   const reveals = document.querySelectorAll(".reveal");
   if (reduce || !("IntersectionObserver" in window)) reveals.forEach((el) => el.classList.add("is-in"));
   else {
@@ -1024,6 +1044,315 @@
     shutters.forEach((f) => so.observe(f.closest(".scene") || f.parentElement));
   }
 
+  // ---------- one entry at a time, one screen at a time ----------
+  // Work, Research and Projects show a single entry. Each entry is cut into full-screen
+  // pages (the write-up, then its diagram) and the page snaps so a scroll always lands
+  // on exactly one of them. A sticky bar names every entry and carries Next.
+  const carousels = [];
+  const peeks = [];
+  // copy each live diagram into its preview window while the card shows its front
+  const drawPeeks = () => {
+    for (const { tc, src, card } of peeks) {
+      if (!card.offsetParent || card.classList.contains("is-flipped") || src.width < 2) continue;
+      const r = tc.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight || r.width < 2) continue;
+      const dpr = Math.min(devicePixelRatio || 1, 2), W = Math.round(r.width * dpr), H = Math.round(W * src.height / src.width);
+      if (tc.width !== W || tc.height !== H) { tc.width = W; tc.height = H; tc.style.height = H / dpr + "px"; }
+      const c2 = tc.getContext("2d");
+      c2.fillStyle = C.bg; c2.fillRect(0, 0, W, H);
+      c2.drawImage(src, 0, 0, W, H);
+    }
+    requestAnimationFrame(drawPeeks);
+  };
+  requestAnimationFrame(drawPeeks);
+  const barH = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--bar")) || 56;
+  const minZoom = () => (innerWidth < 700 ? 0.86 : 0.74);
+  // Shrink a page's text until it fits the screen (down to a readable floor).
+  const fitPage = (pg) => {
+    const face = pg.querySelector(".front");
+    const inner = face?.querySelector(".page-inner"), box = inner?.querySelector(".fit-box");
+    if (!box) return;
+    inner.style.zoom = ""; inner.classList.remove("scrolls");
+    const cs = getComputedStyle(face), flip = face.querySelector(".flip-btn");
+    const avail = face.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
+      - (flip && flip.offsetParent ? flip.getBoundingClientRect().height + parseFloat(getComputedStyle(flip).marginTop) : 0);
+    // project previews are sized from the card's height so the 16:9 frame always fits
+    const rp = pg.classList.contains("reel") && box.querySelector(".peek");
+    if (rp) {
+      const call = rp.querySelector(".peek-call").getBoundingClientRect().height;
+      rp.style.width = Math.max(240, Math.floor((avail - call - 10 - 22) * 16 / 9 + 22)) + "px";
+    }
+    const fits = (z) => { inner.style.zoom = String(z); return box.getBoundingClientRect().height <= avail + 1; };
+    if (fits(1)) { inner.style.zoom = ""; return; }
+    // largest size that still fits (text reflows as it shrinks, so search rather than scale)
+    let lo = minZoom(), hi = 1;
+    if (!fits(lo)) { inner.classList.add("scrolls"); inner.scrollTop = 0; return; }
+    for (let k = 0; k < 7; k++) { const mid = (lo + hi) / 2; if (fits(mid)) lo = mid; else hi = mid; }
+    inner.style.zoom = String(Math.round(lo * 1000) / 1000);
+  };
+
+  // Diagrams keep the shape they were drawn for; the card grows rather than squeezing them.
+  const narrowScreen = () => matchMedia("(max-width: 899px)").matches;
+  const ratioOf = (cv) => {
+    const film = cv.dataset.film, phone = matchMedia("(max-width: 640px)").matches;
+    if (cv.closest(".reel")) return phone && film === "robot" ? 1 : 16 / 9;
+    if (phone) return film === "aws" ? 1 : 4 / 3;
+    return 2;
+  };
+  const sizeFig = (pg) => {
+    const stage = pg.querySelector(".back .fig-stage"), cv = stage?.querySelector("canvas");
+    if (!cv) return;
+    pg.style.height = "";
+    const r = ratioOf(cv);
+    cv.style.width = cv.style.height = "0px";
+    if (narrowScreen()) { const w = stage.clientWidth; cv.style.width = w + "px"; cv.style.height = Math.round(w / r) + "px"; return; }
+    const sw = stage.clientWidth, sh = stage.clientHeight;
+    let w = Math.min(sw, sh * r);
+    const min = Math.min(sw, 560);
+    if (w < min) { pg.style.height = pg.offsetHeight + Math.ceil(min / r - sh) + "px"; w = min; }
+    cv.style.width = Math.floor(w) + "px"; cv.style.height = Math.floor(w / r) + "px";
+    // the step list scrolls in its own column if it is taller than the diagram area
+    const ol = pg.querySelector(".back .steps");
+    if (ol) ol.style.maxHeight = stage.clientHeight + "px";
+  };
+
+  document.querySelectorAll("[data-carousel]").forEach((track) => {
+    const slides = [...track.children];
+    if (slides.length < 2) return;
+    const section = track.closest("section");
+    const noun = track.dataset.noun || "entry";
+    const Noun = noun[0].toUpperCase() + noun.slice(1);
+    const behavior = reduce ? "auto" : "smooth";
+    const name = (el) => el.dataset.tab || el.querySelector("h3")?.textContent.trim() || "";
+    const full = (el) => el.dataset.label || name(el);
+    track.classList.add("is-stepper");
+    section.classList.add("has-stepper");
+
+    let after = section.nextElementSibling;
+    while (after && !(after.tagName === "SECTION" && after.id)) after = after.nextElementSibling;
+    const afterName = after ? (after.dataset.label || after.querySelector("h2")?.textContent.trim()) : "";
+
+    // each entry becomes one card: the write-up on the front, its diagram on the back
+    const isProj = noun === "project";
+    const flipText = isProj ? "Flip to see it run" : "Flip to see how it works";
+    const pagesOf = slides.map((sl) => {
+      const fig = sl.querySelector(":scope > figure, :scope > .footage");
+      const page = sl.classList.contains("reel") ? sl : document.createElement("div");
+      page.classList.add("page", "page-card");
+      const card = document.createElement("div"); card.className = "card";
+      const turn = document.createElement("div"); turn.className = "card-inner";
+      const front = document.createElement("div"); front.className = "face front";
+      const inner = document.createElement("div"); inner.className = "page-inner";
+      const box = document.createElement("div"); box.className = "fit-box"; inner.append(box);
+      [...sl.childNodes].forEach((n) => { if (n !== fig) box.append(n); });
+      front.append(inner); turn.append(front); card.append(turn);
+      if (page === sl) sl.append(card); else { page.append(card); sl.append(page); }
+      if (!fig) { card.classList.add("single"); return [page]; }
+      fig.classList.add("footage", "is-open");
+      const back = document.createElement("div"); back.className = "face back";
+      const stage = document.createElement("div"); stage.className = "fig-stage";
+      const cv = fig.querySelector("canvas"); cv.before(stage); stage.append(cv);
+      let head = fig.querySelector(".fig-head");
+      if (!head) { head = document.createElement("div"); head.className = "fig-head"; head.innerHTML = `<span class="fig-kicker">${isProj ? "Demo" : "Diagram"}</span><span class="fig-title">${sl.querySelector("h3")?.textContent.trim() || name(sl)}</span>`; fig.prepend(head); }
+      const unflip = document.createElement("button");
+      unflip.type = "button"; unflip.className = "flip-back";
+      unflip.innerHTML = `<i aria-hidden="true">&#8634;</i> Back to the details`;
+      head.append(unflip);
+      back.append(fig); turn.append(back);
+      const flip = document.createElement("button");
+      flip.type = "button"; flip.className = "flip-btn";
+      flip.innerHTML = `<span>${flipText}</span><i aria-hidden="true">&#8635;</i>`;
+      front.append(flip);
+      // live preview of the diagram, top right of the front: the motion is the cue
+      const peek = document.createElement("button");
+      peek.type = "button"; peek.className = "peek"; peek.setAttribute("aria-label", flipText);
+      peek.innerHTML = `<span class="peek-call" aria-hidden="true">
+          <span class="peek-title">${isProj ? "See it run" : "See it in action"}</span>
+          <span class="peek-sub">Click to flip the card</span>
+          <svg class="peek-arrow peek-r" viewBox="0 0 64 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 26 C 18 6, 40 4, 58 16"/><path d="M48 9 L58 16 L47 21"/></svg>
+          <svg class="peek-arrow peek-d" viewBox="0 0 40 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 4 C 30 10, 32 26, 24 42"/><path d="M17 34 L24 43 L31 35"/></svg>
+        </span><span class="peek-frame"><canvas aria-hidden="true"></canvas></span>`;
+      const tc = peek.querySelector("canvas");
+      const headRow = document.createElement("div"); headRow.className = "front-head";
+      const left = document.createElement("div"); left.className = "front-head-text";
+      const sceneCard = box.querySelector(".scene-card");
+      if (sceneCard) { const dates = box.querySelector(":scope > .dates"); if (dates) left.append(dates); left.append(sceneCard); }
+      else { const txt = box.querySelector(":scope > div"); if (txt) left.append(txt); }
+      headRow.append(left, peek); box.prepend(headRow);
+      peeks.push({ tc, src: cv, card });
+      const set = (on, kb) => {
+        card.classList.toggle("is-flipped", on);
+        front.inert = on; back.inert = !on;
+        front.setAttribute("aria-hidden", String(on)); back.setAttribute("aria-hidden", String(!on));
+        dispatchEvent(new Event("resize"));
+        if (kb) setTimeout(() => (on ? unflip : flip).focus({ preventScroll: true }), reduce ? 0 : 400);
+      };
+      card.unflip = () => { card.classList.remove("is-flipped"); front.inert = false; back.inert = true; back.setAttribute("aria-hidden", "true"); front.setAttribute("aria-hidden", "false"); };
+      card.unflip();
+      flip.addEventListener("click", (e) => set(true, e.detail === 0));
+      peek.addEventListener("click", (e) => set(true, e.detail === 0));
+      unflip.addEventListener("click", (e) => set(false, e.detail === 0));
+      return [page];
+    });
+
+    // sticky bar: chapter name, every entry, and Next
+    const h2 = section.querySelector(".chapter-title");
+    const nav = document.createElement("div");
+    nav.className = "slide-nav";
+    nav.innerHTML = `<div class="slide-tabs" role="tablist" aria-label="${track.getAttribute("aria-label") || "Entries"}"></div>
+      <div class="slide-ctrl"><span class="slide-count"></span>
+      <button type="button" class="slide-prev" aria-label="Previous ${noun}">&larr;</button>
+      <button type="button" class="slide-next"><span></span><i aria-hidden="true">&rarr;</i></button></div>`;
+    if (h2) { h2.classList.remove("chapter-title"); h2.classList.add("slide-title"); nav.prepend(h2); }
+    const tabs = slides.map((sl, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.setAttribute("role", "tab");
+      b.innerHTML = `<small>${String(i + 1).padStart(2, "0")}</small>${name(sl)}`;
+      b.addEventListener("click", () => go(i));
+      nav.querySelector(".slide-tabs").append(b);
+      return b;
+    });
+    track.before(nav);
+
+    // end of every entry: Next on top, Previous under it
+    const foot = document.createElement("div");
+    foot.className = "slide-foot";
+    foot.innerHTML = `<button type="button" class="foot-prev"></button>
+      <button type="button" class="foot-next"><small></small><span></span><i aria-hidden="true">&rarr;</i></button>`;
+    const more = section.querySelector(".more");
+    // wide screens: slim tabs in the side margins instead of a row under the card
+    const sPrev = document.createElement("button"), sNext = document.createElement("button");
+    sPrev.type = sNext.type = "button";
+    sPrev.className = "side-tab side-prev"; sNext.className = "side-tab side-next";
+    sPrev.addEventListener("click", () => step(-1));
+    sNext.addEventListener("click", () => step(1));
+
+    const count = nav.querySelector(".slide-count");
+    const prev = nav.querySelector(".slide-prev"), next = nav.querySelector(".slide-next");
+    const fPrev = foot.querySelector(".foot-prev"), fNext = foot.querySelector(".foot-next");
+    let cur = -1;
+    const measure = () => section.style.setProperty("--subnav", nav.offsetHeight + "px");
+    const refit = () => { measure(); if (cur >= 0) pagesOf[cur].forEach((pg) => { sizeFig(pg); fitPage(pg); }); };
+    const leave = () => after && after.scrollIntoView({ behavior, block: "start" });
+    function show(i) {
+      i = clamp(i, 0, slides.length - 1);
+      const dir = i >= cur ? 1 : -1;
+      if (i !== cur) {
+        slides.forEach((sl, k) => { sl.hidden = k !== i; sl.classList.remove("enter-l", "enter-r"); });
+        if (cur >= 0 && !reduce) { void slides[i].offsetWidth; slides[i].classList.add(dir > 0 ? "enter-r" : "enter-l"); }
+        cur = i;
+      }
+      const last = i === slides.length - 1;
+      tabs.forEach((b, k) => { b.setAttribute("aria-selected", String(k === i)); b.tabIndex = k === i ? 0 : -1; });
+      const tl = tabs[i].parentElement;
+      tl.scrollTo({ left: tabs[i].offsetLeft - tl.offsetLeft - 24, behavior });
+      count.textContent = `${Noun} ${i + 1} of ${slides.length}`;
+      prev.disabled = i === 0;
+      next.querySelector("span").textContent = last ? (after ? `On to ${afterName}` : "Done") : `Next: ${name(slides[i + 1])}`;
+      next.querySelector("i").innerHTML = last ? "&darr;" : "&rarr;";
+      next.disabled = last && !after;
+      fNext.hidden = last && !after;
+      fNext.querySelector("small").textContent = last ? `That's every ${noun}` : `Next ${noun}`;
+      fNext.querySelector("span").textContent = last ? `Continue to ${afterName}` : full(slides[i + 1]);
+      fNext.querySelector("i").innerHTML = last ? "&darr;" : "&rarr;";
+      fPrev.hidden = i === 0;
+      if (i > 0) fPrev.innerHTML = `<i aria-hidden="true">&larr;</i> Previous: ${full(slides[i - 1])}`;
+      const lastPage = pagesOf[i][pagesOf[i].length - 1];
+      lastPage.querySelector(".card")?.unflip?.();
+      lastPage.append(foot);
+      sPrev.hidden = i === 0;
+      // thin drawn arrows, no box: the labelled Next lives in the top bar
+      const svg = (d) => `<svg viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">${d}</svg>`;
+      const R = svg('<path d="M4 15h22M18 7l8 8-8 8"/>'), L = svg('<path d="M26 15H4M12 7l-8 8 8 8"/>'), D = svg('<path d="M15 4v22M7 18l8 8 8-8"/>');
+      if (i > 0) { sPrev.innerHTML = L; sPrev.setAttribute("aria-label", `Previous ${noun}: ${full(slides[i - 1])}`); sPrev.title = full(slides[i - 1]); }
+      sNext.hidden = last && !after;
+      sNext.innerHTML = last ? D : R;
+      sNext.title = last ? afterName : full(slides[i + 1]);
+      sNext.setAttribute("aria-label", last ? `Continue to ${afterName}` : `Next ${noun}: ${full(slides[i + 1])}`);
+      lastPage.append(sPrev, sNext);
+      if (more) fPrev.after(more);
+      refit();
+      dispatchEvent(new Event("resize"));
+      dispatchEvent(new Event("scroll"));
+    }
+    // switch entry and land on its first page
+    function go(i) {
+      show(i);
+      requestAnimationFrame(() => pagesOf[cur][0].scrollIntoView({ behavior, block: "start" }));
+    }
+    const step = (d) => (cur + d >= slides.length ? leave() : cur + d >= 0 && go(cur + d));
+    prev.addEventListener("click", () => step(-1));
+    next.addEventListener("click", () => step(1));
+    fPrev.addEventListener("click", () => step(-1));
+    fNext.addEventListener("click", () => step(1));
+    nav.querySelector(".slide-tabs").addEventListener("keydown", (e) => {
+      const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      e.preventDefault(); show(cur + d); tabs[cur].focus();
+    });
+    let sx = 0, sy = 0, st = 0;
+    track.addEventListener("touchstart", (e) => { const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); }, { passive: true });
+    track.addEventListener("touchend", (e) => {
+      const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Date.now() - st < 600 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) {
+        const k = cur + (dx < 0 ? 1 : -1);
+        if (k >= 0 && k < slides.length) go(k);
+      }
+    }, { passive: true });
+    show(0);
+    let rt; addEventListener("resize", (e) => { if (!e.isTrusted) return; clearTimeout(rt); rt = setTimeout(refit, 120); });
+    document.fonts?.ready.then(refit);
+    carousels.push({ slides, go });
+  });
+  // Links into an entry (index panel, #hash) open that entry first.
+  const openEntry = (hash) => {
+    if (!hash || hash.length < 2) return;
+    let el; try { el = document.querySelector(hash); } catch { return; }
+    for (const c of carousels) {
+      const i = c.slides.findIndex((sl) => sl === el || sl.contains(el));
+      if (i >= 0) { c.go(i); return; }
+    }
+  };
+  document.addEventListener("click", (e) => { const a = e.target.closest('a[href^="#"]'); if (a) openEntry(a.getAttribute("href")); }, true);
+  addEventListener("hashchange", () => openEntry(location.hash));
+  openEntry(location.hash);
+
+  // ---------- up / down: step through the snap points one at a time ----------
+  const secUp = document.querySelector(".sec-up"), secDown = document.querySelector(".sec-down");
+  if (secUp && secDown) {
+    const stops = () => [...document.querySelectorAll(".title, .about, .page, .chapter:not(.has-stepper), .closing")]
+      .filter((el) => el.offsetParent && !el.closest("[hidden]"));
+    // where each stop sits once snapped (its scroll-margin and the top bar included)
+    const restY = (el) => {
+      const r = el.getBoundingClientRect();
+      const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--bar")) || 0;
+      return r.top - top - (parseFloat(getComputedStyle(el).scrollMarginTop) || 0);
+    };
+    const move = (d) => {
+      const list = stops();
+      const bar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--bar")) || 0;
+      const view = innerHeight - 2 * bar, b = reduce ? "auto" : "smooth";
+      // inside a stop taller than the screen, page through it before moving on
+      const here = [...list].reverse().find((el) => restY(el) <= 4);
+      if (here) {
+        const r = here.getBoundingClientRect();
+        if (d > 0 && r.bottom > innerHeight - bar + 24) { scrollBy({ top: Math.min(view - 40, r.bottom - (innerHeight - bar)), behavior: b }); return; }
+        if (d < 0 && restY(here) < -4) { scrollBy({ top: Math.max(-(view - 40), restY(here)), behavior: b }); return; }
+      }
+      const target = d > 0 ? list.find((el) => restY(el) > 4) : [...list].reverse().find((el) => restY(el) < -4);
+      if (target) target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+      else if (d < 0) scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    };
+    secUp.addEventListener("click", () => move(-1));
+    secDown.addEventListener("click", () => move(1));
+    const syncArrows = () => {
+      secUp.disabled = scrollY < 4;
+      secDown.disabled = innerHeight + scrollY >= document.documentElement.scrollHeight - 4;
+    };
+    addEventListener("scroll", syncArrows, { passive: true });
+    syncArrows();
+  }
+
   // ---------- bottom bar label ----------
   const label = document.querySelector(".counter-name");
   const labeled = [...document.querySelectorAll("[data-label]")];
@@ -1033,7 +1362,7 @@
       raf = 0;
       const mid = innerHeight * 0.5;
       let pick = null;
-      for (const el of labeled) { const r = el.getBoundingClientRect(); if (r.top <= mid && r.bottom >= mid) pick = el; }
+      for (const el of labeled) { const r = el.getBoundingClientRect(); if (r.top <= mid && r.bottom >= mid && r.right > 0 && r.left < innerWidth) pick = el; }
       if (pick && label.textContent !== pick.dataset.label) label.textContent = pick.dataset.label;
     };
     addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });

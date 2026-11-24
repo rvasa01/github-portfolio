@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Rahil Vasa</title>
   <meta name="description" content="Rahil Vasa is a software engineer on Microsoft's Azure Security team. Previously: firmware security at AWS, founding engineer at a stealth AI startup, and threat detection at Honeypot Technologies.">
-  <meta name="theme-color" content="#0a0a0a">
+  <meta name="theme-color" content="#f3eee4">
   <meta property="og:title" content="Rahil Vasa">
   <meta property="og:description" content="Software engineer, Azure Security at Microsoft.">
   <meta property="og:image" content="https://rvasa01.github.io/github-portfolio/assets/img/profile-picture-rahil.jpg">
@@ -47,14 +47,19 @@
       </li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#education">Education</a></li>
-      <li><a href="#skills">Skills</a></li>
       <li><a href="#contact">Contact</a></li>
     </ol>
   </nav>
 
-  <div class="bar bar-bottom" aria-hidden="true">
-    <p class="counter"><span class="counter-name">Rahil Vasa</span></p>
-    <a class="bar-cta" href="#contact" tabindex="-1">Get in touch</a>
+  <div class="bar bar-bottom">
+    <div class="bar-left">
+      <div class="sec-nav" role="group" aria-label="Move between sections">
+        <button type="button" class="sec-up" aria-label="Previous section">&uarr;</button>
+        <button type="button" class="sec-down" aria-label="Next section">&darr;</button>
+      </div>
+      <p class="counter" aria-hidden="true"><span class="counter-name">Rahil Vasa</span></p>
+    </div>
+    <a class="bar-cta" href="#contact" tabindex="-1" aria-hidden="true">Get in touch</a>
   </div>
 
   <main id="main">
@@ -93,7 +98,8 @@
     <section class="chapter" id="work" data-label="Work" aria-labelledby="work-h">
       <h2 class="chapter-title" id="work-h">Work</h2>
 
-      <article class="scene scene-quiet" id="job-microsoft" data-label="Microsoft">
+      <div class="slides" data-carousel data-noun="role" aria-label="Work entries">
+      <article class="scene scene-quiet" id="job-microsoft" data-tab="Microsoft" data-label="Microsoft">
         <p class="dates">Dec 2025 – Present</p>
         <div class="scene-card">
           <h3>Software Engineer, Azure Security</h3>
@@ -102,7 +108,7 @@
         </div>
       </article>
 
-      <article class="scene" id="job-startup" data-label="Stealth AI Startup">
+      <article class="scene" id="job-startup" data-tab="Stealth AI startup" data-label="Stealth AI Startup">
         <p class="dates">Oct – Dec 2025</p>
         <div class="scene-body">
           <div class="scene-card">
@@ -126,7 +132,7 @@
         </figure>
       </article>
 
-      <article class="scene" id="job-aws" data-label="Amazon Web Services">
+      <article class="scene" id="job-aws" data-tab="AWS" data-label="Amazon Web Services">
         <p class="dates">Jun – Aug 2025</p>
         <div class="scene-body">
           <div class="scene-card">
@@ -148,7 +154,7 @@
         </figure>
       </article>
 
-      <article class="scene" id="job-honeypot" data-label="Honeypot Technologies">
+      <article class="scene" id="job-honeypot" data-tab="Honeypot" data-label="Honeypot Technologies">
         <p class="dates">May 2024 – Apr 2025</p>
         <div class="scene-body">
           <div class="scene-card">
@@ -176,12 +182,14 @@
           <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Scan</strong><span class="d">Attackers sweep the internet for open ports. The firewall drops most probes.</span></button></li><li><button type="button"><span class="n">02</span><strong>Lure</strong><span class="d">Every host on this network is a honeypot. OpenCanary makes each one pose as a live service: SSH, RDP, a web server, a database.</span></button></li><li><button type="button"><span class="n">03</span><strong>Log</strong><span class="d">Each honeypot records the attacker&#x27;s IP and the port it hit, and reports it to the central server.</span></button></li><li><button type="button"><span class="n">04</span><strong>Monitor</strong><span class="d">The central server shows attacks as they happen, giving early warning for incident response.</span></button></li></ol>
         </figure>
       </article>
+      </div>
     </section>
 
     <section class="chapter" id="research" data-label="Research" aria-labelledby="research-h">
       <h2 class="chapter-title" id="research-h">Research</h2>
 
-      <article class="scene" id="job-gt" data-label="Cyberphysical Systems Lab, Georgia Tech">
+      <div class="slides" data-carousel data-noun="lab" aria-label="Research entries">
+      <article class="scene" id="job-gt" data-tab="Georgia Tech" data-label="Cyberphysical Systems Lab, Georgia Tech">
         <p class="dates">Aug – Dec 2023</p>
         <div class="scene-body">
           <div class="scene-card">
@@ -201,7 +209,7 @@
         </figure>
       </article>
 
-      <article class="scene" id="job-emory" data-label="Perception and Action Lab, Emory">
+      <article class="scene" id="job-emory" data-tab="Emory" data-label="Perception and Action Lab, Emory">
         <p class="dates">Aug 2022 – Mar 2023</p>
         <div class="scene-body">
           <div class="scene-card">
@@ -219,12 +227,13 @@
           <ol class="steps" aria-label="Steps"><li><button type="button"><span class="n">01</span><strong>Collect</strong><span class="d">Decision data from mice, plus synthetic data generated in Python, fills the histogram.</span></button></li><li><button type="button"><span class="n">02</span><strong>Fit</strong><span class="d">The statistical distribution that best fits the data is found and drawn over it.</span></button></li><li><button type="button"><span class="n">03</span><strong>Prepare</strong><span class="d">The data is cleaned and pre-processed as input for a neural network.</span></button></li></ol>
         </figure>
       </article>
+      </div>
     </section>
 
     <section class="chapter projects" id="projects" data-label="Projects" aria-labelledby="proj-h">
       <h2 class="chapter-title" id="proj-h">Projects</h2>
-      <ul class="reels">
-        <li class="reel">
+      <ul class="reels slides" data-carousel data-noun="project" aria-label="Projects">
+        <li class="reel" data-tab="CUDA">
           <figure data-summary="The Game of Life grid updating every generation.">
           <figcaption class="visually-hidden">The Game of Life grid updating every generation.</figcaption>
             <canvas data-film="cuda" aria-hidden="true"></canvas>
@@ -236,7 +245,7 @@
             <p class="tags">CUDA, C++</p>
           </div>
         </li>
-        <li class="reel">
+        <li class="reel" data-tab="Threads &amp; OpenMP">
           <figure data-summary="The grid split into four strips, one per thread.">
           <figcaption class="visually-hidden">The grid split into four strips, one per thread.</figcaption>
             <canvas data-film="threads" aria-hidden="true"></canvas>
@@ -248,7 +257,7 @@
             <p class="tags">C++, OpenMP</p>
           </div>
         </li>
-        <li class="reel">
+        <li class="reel" data-tab="UDP robot">
           <figure data-summary="A client sends key presses over UDP; the server changes the robot's direction or speed and redraws it on a grid.">
           <figcaption class="visually-hidden">A client sends key presses over UDP; the server changes the robot's direction or speed and redraws it on a grid.</figcaption>
             <canvas data-film="robot" aria-hidden="true"></canvas>
@@ -260,7 +269,7 @@
             <p class="tags">C++, UDP sockets, SFML</p>
           </div>
         </li>
-        <li class="reel">
+        <li class="reel" data-tab="Centipede">
           <figure data-summary="Mushrooms are placed at random, the centipede and a spider move through them, and collisions are resolved each frame.">
             <figcaption class="visually-hidden">Mushrooms are placed at random, the centipede and a spider move through them, and collisions are resolved each frame.</figcaption>
             <canvas data-film="centipede" aria-hidden="true"></canvas>
@@ -272,7 +281,7 @@
             <p class="tags">C++, SFML</p>
           </div>
         </li>
-        <li class="reel">
+        <li class="reel" data-tab="Netpbm images">
           <figure data-summary="A PPM image's header is parsed, its pixels are loaded into a 2D array, converted pixel by pixel, and written out in another Netpbm format.">
             <figcaption class="visually-hidden">A PPM image's header is parsed, its pixels are loaded into a 2D array, converted pixel by pixel, and written out in another Netpbm format.</figcaption>
             <canvas data-film="netpbm" aria-hidden="true"></canvas>
@@ -290,8 +299,8 @@
 
     <section class="chapter education" id="education" data-label="Education" aria-labelledby="edu-h">
       <h2 class="chapter-title" id="edu-h">Education</h2>
-      <div class="schools">
-        <article class="school reveal" style="--i:0">
+      <div class="schools slides" data-carousel data-noun="school" aria-label="Schools">
+        <article class="school" data-tab="Georgia Tech" data-label="Georgia Institute of Technology">
           <p class="dates">Aug 2023 – May 2025</p>
           <h3>Georgia Institute of Technology</h3>
           <p class="degree">B.S. Computer Engineering, minor in Artificial Intelligence</p>
@@ -301,7 +310,7 @@
             <dt>Coursework</dt><dd><ul class="courses"><li>Intro to Malware Reverse Engineering</li><li>Intro to Computer Security</li><li>Internetwork Security</li><li>Computer Communications</li><li>Programming for Hardware and Software Systems</li><li>Advanced Programming Techniques for Engineering Applications</li><li>Fundamentals of Machine Learning</li><li>Optimization of Information Systems</li><li>Physical Foundations of Computer Engineering</li></ul></dd>
           </dl>
         </article>
-        <article class="school reveal" style="--i:1">
+        <article class="school" data-tab="Emory" data-label="Emory University">
           <p class="dates">Aug 2020 – May 2023</p>
           <h3>Emory University</h3>
           <p class="degree">B.A. Computer Science, minor in Physics</p>
@@ -310,36 +319,6 @@
             <dt>Coursework</dt><dd><ul class="courses"><li>Data Structures and Algorithms</li><li>Foundations of Computer Science</li><li>Systems Programming</li><li>Advanced Computer Architecture</li><li>Database Systems</li></ul></dd>
           </dl>
         </article>
-      </div>
-    </section>
-
-    <section class="chapter skills" id="skills" data-label="Skills" aria-labelledby="skills-h">
-      <h2 class="chapter-title" id="skills-h">Skills</h2>
-      <div class="skill-rows">
-        <div class="skill-row reveal from-right" style="--i:0">
-          <h3>Languages</h3>
-          <ul><li>Python</li><li>C</li><li>C++</li><li>Go</li><li>TypeScript</li><li>JavaScript</li><li>Java</li><li>C#</li><li>MATLAB</li><li>X86 assembly</li><li>SQL (PostgreSQL)</li></ul>
-        </div>
-        <div class="skill-row reveal from-right" style="--i:1">
-          <h3>Security</h3>
-          <ul><li>Reverse engineering</li><li>Firmware analysis</li><li>Malware analysis</li><li>Network security</li></ul>
-        </div>
-        <div class="skill-row reveal from-right" style="--i:2">
-          <h3>Security tools</h3>
-          <ul><li>IDA Pro</li><li>Ghidra</li><li>YARA</li><li>EMBA</li><li>Binwalk</li><li>QEMU</li><li>Metasploit</li><li>Snort</li><li>Nmap</li><li>Wireshark</li><li>OpenCanary</li><li>OpenSSL</li></ul>
-        </div>
-        <div class="skill-row reveal from-right" style="--i:3">
-          <h3>Cloud</h3>
-          <ul><li>AWS (ECS Fargate, ECR, S3, CloudFormation, KMS, VPC)</li><li>Docker</li><li>Cloudflare Workers</li></ul>
-        </div>
-        <div class="skill-row reveal from-right" style="--i:4">
-          <h3>AI systems</h3>
-          <ul><li>Small language models</li><li>Fine-tuning</li><li>Retrieval-augmented generation</li><li>Finite state machines</li><li>Petri nets</li><li>Pydantic</li></ul>
-        </div>
-        <div class="skill-row reveal from-right" style="--i:5">
-          <h3>Other</h3>
-          <ul><li>Vue.js</li><li>ROS</li><li>HELICS</li><li>OpenGL</li><li>SFML</li><li>CUDA</li><li>OpenMP</li></ul>
-        </div>
       </div>
     </section>
 
