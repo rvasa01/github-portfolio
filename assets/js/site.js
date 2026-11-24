@@ -1221,9 +1221,13 @@
       lastPage.querySelector(".card")?.unflip?.();
       lastPage.append(foot);
       sPrev.hidden = i === 0;
-      if (i > 0) { sPrev.innerHTML = `<i aria-hidden="true">&larr;</i><span>${name(slides[i - 1])}</span>`; sPrev.setAttribute("aria-label", `Previous ${noun}: ${full(slides[i - 1])}`); }
+      // thin drawn arrows, no box: the labelled Next lives in the top bar
+      const svg = (d) => `<svg viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">${d}</svg>`;
+      const R = svg('<path d="M4 15h22M18 7l8 8-8 8"/>'), L = svg('<path d="M26 15H4M12 7l-8 8 8 8"/>'), D = svg('<path d="M15 4v22M7 18l8 8 8-8"/>');
+      if (i > 0) { sPrev.innerHTML = L; sPrev.setAttribute("aria-label", `Previous ${noun}: ${full(slides[i - 1])}`); sPrev.title = full(slides[i - 1]); }
       sNext.hidden = last && !after;
-      sNext.innerHTML = last ? `<span>${afterName}</span><i aria-hidden="true">&darr;</i>` : `<span>Next &middot; ${name(slides[i + 1])}</span><i aria-hidden="true">&rarr;</i>`;
+      sNext.innerHTML = last ? D : R;
+      sNext.title = last ? afterName : full(slides[i + 1]);
       sNext.setAttribute("aria-label", last ? `Continue to ${afterName}` : `Next ${noun}: ${full(slides[i + 1])}`);
       lastPage.append(sPrev, sNext);
       if (more) fPrev.after(more);
@@ -1272,6 +1276,42 @@
   document.addEventListener("click", (e) => { const a = e.target.closest('a[href^="#"]'); if (a) openEntry(a.getAttribute("href")); }, true);
   addEventListener("hashchange", () => openEntry(location.hash));
   openEntry(location.hash);
+
+  // ---------- up / down: step through the snap points one at a time ----------
+  const secUp = document.querySelector(".sec-up"), secDown = document.querySelector(".sec-down");
+  if (secUp && secDown) {
+    const stops = () => [...document.querySelectorAll(".title, .about, .page, .chapter:not(.has-stepper), .closing")]
+      .filter((el) => el.offsetParent && !el.closest("[hidden]"));
+    // where each stop sits once snapped (its scroll-margin and the top bar included)
+    const restY = (el) => {
+      const r = el.getBoundingClientRect();
+      const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--bar")) || 0;
+      return r.top - top - (parseFloat(getComputedStyle(el).scrollMarginTop) || 0);
+    };
+    const move = (d) => {
+      const list = stops();
+      const bar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--bar")) || 0;
+      const view = innerHeight - 2 * bar, b = reduce ? "auto" : "smooth";
+      // inside a stop taller than the screen, page through it before moving on
+      const here = [...list].reverse().find((el) => restY(el) <= 4);
+      if (here) {
+        const r = here.getBoundingClientRect();
+        if (d > 0 && r.bottom > innerHeight - bar + 24) { scrollBy({ top: Math.min(view - 40, r.bottom - (innerHeight - bar)), behavior: b }); return; }
+        if (d < 0 && restY(here) < -4) { scrollBy({ top: Math.max(-(view - 40), restY(here)), behavior: b }); return; }
+      }
+      const target = d > 0 ? list.find((el) => restY(el) > 4) : [...list].reverse().find((el) => restY(el) < -4);
+      if (target) target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+      else if (d < 0) scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    };
+    secUp.addEventListener("click", () => move(-1));
+    secDown.addEventListener("click", () => move(1));
+    const syncArrows = () => {
+      secUp.disabled = scrollY < 4;
+      secDown.disabled = innerHeight + scrollY >= document.documentElement.scrollHeight - 4;
+    };
+    addEventListener("scroll", syncArrows, { passive: true });
+    syncArrows();
+  }
 
   // ---------- bottom bar label ----------
   const label = document.querySelector(".counter-name");
