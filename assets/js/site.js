@@ -3,11 +3,17 @@
   document.documentElement.classList.add("js");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // One accent. Red marks only the thing that is happening right now.
+  // One accent. Navy marks only the thing that is happening right now.
   const C = {
-    bg: "#0a0a0a", ink: "#ece8e1", dim: "#a39e95", faint: "#7d7870", line: "#625f5a",
-    hair: "#2e2c29", fill: "#111110", red: "#e04a2f",
+    bg: "#f3eee4", ink: "#1b1a18", dim: "#5a554d", faint: "#7b756b", line: "#a49d90",
+    hair: "#d6cebf", fill: "#e9e2d4", red: "#1f3a5f", hot: "#dbe2ea", block: "#c9c1b2",
   };
+  // Colours live in CSS custom properties; the films read them so a theme change reaches the canvas.
+  {
+    const cs = getComputedStyle(document.documentElement);
+    const map = { bg: "--frame", ink: "--bone", dim: "--dim", faint: "--faint", line: "--line", hair: "--hair", fill: "--panel", red: "--accent", hot: "--hot", block: "--block" };
+    for (const k in map) { const v = cs.getPropertyValue(map[k]).trim(); if (v) C[k] = v; }
+  }
   const SANS = '"Schibsted Grotesk", system-ui, sans-serif';
   const MONO = '"Fragment Mono", ui-monospace, Menlo, monospace';
 
@@ -693,7 +699,7 @@
           const cs = stack ? clamp((cl.h - 24) / 2 - 2, 14, 24) : Math.min(30, (cl.w - 20 - 16) / 5);
           caps.forEach(([c, cx, cy]) => {
             const x = cl.x + 10 + cx * (cs + 4), y = cl.y + 10 + cy * (cs + 4), hot = c === key && st === 0;
-            frame(ctx, x, y, cs, cs, { color: hot ? C.red : C.line, fill: hot ? "#2a120d" : null });
+            frame(ctx, x, y, cs, cs, { color: hot ? C.red : C.line, fill: hot ? C.hot : null });
             text(ctx, c, x + cs / 2, y + cs / 2 + 1, { mono: true, upper: false, size: 11, align: "center", base: "middle", color: hot ? C.red : C.dim });
           });
           const lh = 17, logX = stack ? cl.x + 10 + 5 * (cs + 4) + 8 : cl.x + 10;
@@ -914,7 +920,7 @@
             const bh = ((base - top) * b) / max, tail = i < 4 || i > 23;
             const x = x0 + i * bw + 1, y = base - bh;
             if (k === 2 && tail) frame(ctx, x, y, bw - 2, bh, { kind: "dashed", color: C.hair });
-            else { ctx.fillStyle = "#3a3834"; ctx.fillRect(x, y, bw - 2, bh); ctx.fillStyle = C.dim; ctx.fillRect(x, y, bw - 2, 1); }
+            else { ctx.fillStyle = C.block; ctx.fillRect(x, y, bw - 2, bh); ctx.fillStyle = C.dim; ctx.fillRect(x, y, bw - 2, 1); }
           });
           const prog = k === 0 ? 0 : k === 1 ? ease(((t % P) / P) * 1.4) : 1;
           if (prog > 0) {
