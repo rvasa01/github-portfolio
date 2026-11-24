@@ -1030,11 +1030,31 @@
     shutters.forEach((f) => so.observe(f.closest(".scene") || f.parentElement));
   }
 
-  // ---------- one entry at a time ----------
-  // Each chapter shows a single entry. A sticky bar under the heading names every entry
-  // and carries a clear Next button; the end of each entry repeats it, and the last
-  // entry hands off to the next chapter.
+  // ---------- one entry at a time, one screen at a time ----------
+  // Work, Research and Projects show a single entry. Each entry is cut into full-screen
+  // pages (the write-up, then its diagram) and the page snaps so a scroll always lands
+  // on exactly one of them. A sticky bar names every entry and carries Next.
   const carousels = [];
+  const barH = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--bar")) || 56;
+  const minZoom = () => (innerWidth < 700 ? 0.86 : 0.74);
+  // Shrink a page's text until it fits the screen (down to a readable floor).
+  const fitPage = (pg) => {
+    const face = pg.querySelector(".front");
+    const inner = face?.querySelector(".page-inner"), box = inner?.querySelector(".fit-box");
+    if (!box) return;
+    inner.style.zoom = ""; inner.classList.remove("scrolls");
+    const cs = getComputedStyle(face), flip = face.querySelector(".flip-btn");
+    const avail = face.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
+      - (flip ? flip.getBoundingClientRect().height + parseFloat(getComputedStyle(flip).marginTop) : 0);
+    const fits = (z) => { inner.style.zoom = String(z); return box.getBoundingClientRect().height <= avail + 1; };
+    if (fits(1)) { inner.style.zoom = ""; return; }
+    // largest size that still fits (text reflows as it shrinks, so search rather than scale)
+    let lo = minZoom(), hi = 1;
+    if (!fits(lo)) { inner.classList.add("scrolls"); inner.scrollTop = 0; return; }
+    for (let k = 0; k < 7; k++) { const mid = (lo + hi) / 2; if (fits(mid)) lo = mid; else hi = mid; }
+    inner.style.zoom = String(Math.round(lo * 1000) / 1000);
+  };
+
   document.querySelectorAll("[data-carousel]").forEach((track) => {
     const slides = [...track.children];
     if (slides.length < 2) return;
@@ -1045,56 +1065,91 @@
     const name = (el) => el.dataset.tab || el.querySelector("h3")?.textContent.trim() || "";
     const full = (el) => el.dataset.label || name(el);
     track.classList.add("is-stepper");
+    section.classList.add("has-stepper");
 
-    // where "next" goes after the last entry
     let after = section.nextElementSibling;
     while (after && !(after.tagName === "SECTION" && after.id)) after = after.nextElementSibling;
     const afterName = after ? (after.dataset.label || after.querySelector("h2")?.textContent.trim()) : "";
 
+    // each entry becomes one card: the write-up on the front, its diagram on the back
+    const isProj = noun === "project";
+    const flipText = isProj ? "Flip to see it run" : "Flip to see how it works";
+    const pagesOf = slides.map((sl) => {
+      const fig = sl.querySelector(":scope > figure, :scope > .footage");
+      const page = sl.classList.contains("reel") ? sl : document.createElement("div");
+      page.classList.add("page", "page-card");
+      const card = document.createElement("div"); card.className = "card";
+      const turn = document.createElement("div"); turn.className = "card-inner";
+      const front = document.createElement("div"); front.className = "face front";
+      const inner = document.createElement("div"); inner.className = "page-inner";
+      const box = document.createElement("div"); box.className = "fit-box"; inner.append(box);
+      [...sl.childNodes].forEach((n) => { if (n !== fig) box.append(n); });
+      front.append(inner); turn.append(front); card.append(turn);
+      if (page === sl) sl.append(card); else { page.append(card); sl.append(page); }
+      if (!fig) { card.classList.add("single"); return [page]; }
+      fig.classList.add("footage", "is-open");
+      const back = document.createElement("div"); back.className = "face back";
+      const stage = document.createElement("div"); stage.className = "fig-stage";
+      const cv = fig.querySelector("canvas"); cv.before(stage); stage.append(cv);
+      let head = fig.querySelector(".fig-head");
+      if (!head) { head = document.createElement("div"); head.className = "fig-head"; head.innerHTML = `<span class="fig-kicker">${isProj ? "Demo" : "Diagram"}</span><span class="fig-title">${sl.querySelector("h3")?.textContent.trim() || name(sl)}</span>`; fig.prepend(head); }
+      const unflip = document.createElement("button");
+      unflip.type = "button"; unflip.className = "flip-back";
+      unflip.innerHTML = `<i aria-hidden="true">&#8634;</i> Back to the details`;
+      head.append(unflip);
+      back.append(fig); turn.append(back);
+      const flip = document.createElement("button");
+      flip.type = "button"; flip.className = "flip-btn";
+      flip.innerHTML = `<span>${flipText}</span><i aria-hidden="true">&#8635;</i>`;
+      front.append(flip);
+      const set = (on, kb) => {
+        card.classList.toggle("is-flipped", on);
+        front.inert = on; back.inert = !on;
+        front.setAttribute("aria-hidden", String(on)); back.setAttribute("aria-hidden", String(!on));
+        dispatchEvent(new Event("resize"));
+        if (kb) setTimeout(() => (on ? unflip : flip).focus({ preventScroll: true }), reduce ? 0 : 400);
+      };
+      card.unflip = () => { card.classList.remove("is-flipped"); front.inert = false; back.inert = true; back.setAttribute("aria-hidden", "true"); front.setAttribute("aria-hidden", "false"); };
+      card.unflip();
+      flip.addEventListener("click", (e) => set(true, e.detail === 0));
+      unflip.addEventListener("click", (e) => set(false, e.detail === 0));
+      return [page];
+    });
+
+    // sticky bar: chapter name, every entry, and Next
+    const h2 = section.querySelector(".chapter-title");
     const nav = document.createElement("div");
     nav.className = "slide-nav";
     nav.innerHTML = `<div class="slide-tabs" role="tablist" aria-label="${track.getAttribute("aria-label") || "Entries"}"></div>
       <div class="slide-ctrl"><span class="slide-count"></span>
       <button type="button" class="slide-prev" aria-label="Previous ${noun}">&larr;</button>
       <button type="button" class="slide-next"><span></span><i aria-hidden="true">&rarr;</i></button></div>`;
+    if (h2) { h2.classList.remove("chapter-title"); h2.classList.add("slide-title"); nav.prepend(h2); }
     const tabs = slides.map((sl, i) => {
       const b = document.createElement("button");
-      b.type = "button"; b.setAttribute("role", "tab"); b.textContent = name(sl);
-      b.addEventListener("click", () => show(i));
+      b.type = "button"; b.setAttribute("role", "tab");
+      b.innerHTML = `<small>${String(i + 1).padStart(2, "0")}</small>${name(sl)}`;
+      b.addEventListener("click", () => go(i));
       nav.querySelector(".slide-tabs").append(b);
       return b;
     });
-    (section.querySelector(".chapter-title") || track).after(nav);
-    if (nav.nextElementSibling !== track) nav.after(track);
+    track.before(nav);
 
+    // end of every entry: Next on top, Previous under it
     const foot = document.createElement("div");
     foot.className = "slide-foot";
     foot.innerHTML = `<button type="button" class="foot-prev"></button>
       <button type="button" class="foot-next"><small></small><span></span><i aria-hidden="true">&rarr;</i></button>`;
-    track.after(foot);
-
-    // On narrow or short screens the diagram sits below the text: point to it.
-    slides.forEach((sl) => {
-      const fig = sl.querySelector(".footage");
-      if (!fig) return;
-      sl.classList.add("has-diagram");
-      const hint = document.createElement("button");
-      hint.type = "button"; hint.className = "to-diagram";
-      hint.innerHTML = `<i aria-hidden="true">&darr;</i> See the diagram`;
-      hint.addEventListener("click", () => fig.scrollIntoView({ behavior, block: "start" }));
-      fig.before(hint);
-    });
+    const more = section.querySelector(".more");
 
     const count = nav.querySelector(".slide-count");
     const prev = nav.querySelector(".slide-prev"), next = nav.querySelector(".slide-next");
     const fPrev = foot.querySelector(".foot-prev"), fNext = foot.querySelector(".foot-next");
     let cur = -1;
-    const toNav = () => {
-      const y = section.getBoundingClientRect().top + scrollY + (section.querySelector(".chapter-title")?.offsetHeight || 0);
-      if (Math.abs(nav.getBoundingClientRect().top - parseFloat(getComputedStyle(nav).top)) > 4) scrollTo({ top: y - 8, behavior });
-    };
+    const measure = () => section.style.setProperty("--subnav", nav.offsetHeight + "px");
+    const refit = () => { measure(); if (cur >= 0) pagesOf[cur].forEach(fitPage); };
     const leave = () => after && after.scrollIntoView({ behavior, block: "start" });
-    function show(i, opts = {}) {
+    function show(i) {
       i = clamp(i, 0, slides.length - 1);
       const dir = i >= cur ? 1 : -1;
       if (i !== cur) {
@@ -1102,48 +1157,57 @@
         if (cur >= 0 && !reduce) { void slides[i].offsetWidth; slides[i].classList.add(dir > 0 ? "enter-r" : "enter-l"); }
         cur = i;
       }
+      const last = i === slides.length - 1;
       tabs.forEach((b, k) => { b.setAttribute("aria-selected", String(k === i)); b.tabIndex = k === i ? 0 : -1; });
-      tabs[i].parentElement.scrollTo({ left: tabs[i].offsetLeft - tabs[0].offsetLeft - 24, behavior });
+      const tl = tabs[i].parentElement;
+      tl.scrollTo({ left: tabs[i].offsetLeft - tl.offsetLeft - 24, behavior });
       count.textContent = `${Noun} ${i + 1} of ${slides.length}`;
       prev.disabled = i === 0;
-      const last = i === slides.length - 1;
       next.querySelector("span").textContent = last ? (after ? `On to ${afterName}` : "Done") : `Next: ${name(slides[i + 1])}`;
       next.querySelector("i").innerHTML = last ? "&darr;" : "&rarr;";
       next.disabled = last && !after;
-      fPrev.hidden = i === 0;
-      if (i > 0) fPrev.innerHTML = `<i aria-hidden="true">&larr;</i> ${full(slides[i - 1])}`;
       fNext.hidden = last && !after;
       fNext.querySelector("small").textContent = last ? `That's every ${noun}` : `Next ${noun}`;
       fNext.querySelector("span").textContent = last ? `Continue to ${afterName}` : full(slides[i + 1]);
       fNext.querySelector("i").innerHTML = last ? "&darr;" : "&rarr;";
-      if (opts.toTop) toNav();
+      fPrev.hidden = i === 0;
+      if (i > 0) fPrev.innerHTML = `<i aria-hidden="true">&larr;</i> Previous: ${full(slides[i - 1])}`;
+      const lastPage = pagesOf[i][pagesOf[i].length - 1];
+      lastPage.querySelector(".card")?.unflip?.();
+      lastPage.append(foot);
+      if (more) fPrev.after(more);
+      refit();
       dispatchEvent(new Event("resize"));
       dispatchEvent(new Event("scroll"));
     }
-    const step = (d, toTop) => (cur + d >= slides.length ? leave() : show(cur + d, { toTop }));
-    prev.addEventListener("click", () => step(-1, true));
-    next.addEventListener("click", () => step(1, true));
-    fPrev.addEventListener("click", () => step(-1, true));
-    fNext.addEventListener("click", () => step(1, true));
+    // switch entry and land on its first page
+    function go(i) {
+      show(i);
+      requestAnimationFrame(() => pagesOf[cur][0].scrollIntoView({ behavior, block: "start" }));
+    }
+    const step = (d) => (cur + d >= slides.length ? leave() : cur + d >= 0 && go(cur + d));
+    prev.addEventListener("click", () => step(-1));
+    next.addEventListener("click", () => step(1));
+    fPrev.addEventListener("click", () => step(-1));
+    fNext.addEventListener("click", () => step(1));
     nav.querySelector(".slide-tabs").addEventListener("keydown", (e) => {
       const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
       if (!d) return;
       e.preventDefault(); show(cur + d); tabs[cur].focus();
     });
-    // swipe sideways on touch screens
     let sx = 0, sy = 0, st = 0;
     track.addEventListener("touchstart", (e) => { const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); }, { passive: true });
     track.addEventListener("touchend", (e) => {
       const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
       if (Date.now() - st < 600 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) {
         const k = cur + (dx < 0 ? 1 : -1);
-        if (k >= 0 && k < slides.length) show(k, { toTop: true });
+        if (k >= 0 && k < slides.length) go(k);
       }
     }, { passive: true });
     show(0);
-    const measure = () => section.style.setProperty("--subnav", nav.offsetHeight + "px");
-    measure(); addEventListener("resize", measure);
-    carousels.push({ slides, go: (i) => show(i) });
+    let rt; addEventListener("resize", (e) => { if (!e.isTrusted) return; clearTimeout(rt); rt = setTimeout(refit, 120); });
+    document.fonts?.ready.then(refit);
+    carousels.push({ slides, go });
   });
   // Links into an entry (index panel, #hash) open that entry first.
   const openEntry = (hash) => {
