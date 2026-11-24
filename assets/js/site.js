@@ -1017,7 +1017,7 @@
     resizeTimer = setTimeout(() => players.forEach((p) => p.film.draw()), 150);
   });
 
-  // ---------- slide-in for education and skills ----------
+  // ---------- slide-in reveals ----------
   const reveals = document.querySelectorAll(".reveal");
   if (reduce || !("IntersectionObserver" in window)) reveals.forEach((el) => el.classList.add("is-in"));
   else {

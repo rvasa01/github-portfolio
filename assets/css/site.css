@@ -384,7 +384,7 @@ html { scroll-snap-type: y mandatory; scroll-padding-top: var(--bar); scroll-pad
   display: flex; align-items: center; gap: 12px 28px;
   padding: 14px var(--pad); background: var(--frame); border-bottom: 1px solid var(--rule);
 }
-.projects .slide-nav { margin-left: calc(-1 * var(--pad)); margin-right: calc(-1 * var(--pad)); }
+.projects .slide-nav, .education .slide-nav { margin-left: calc(-1 * var(--pad)); margin-right: calc(-1 * var(--pad)); }
 .slide-title { margin: 0; flex: none; font-size: clamp(30px, 2.6vw, 40px); line-height: 1; letter-spacing: -0.02em; }
 .slide-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; min-width: 0; flex: 1; padding: 2px; }
 .slide-tabs::-webkit-scrollbar { display: none; }
@@ -564,8 +564,16 @@ html { scroll-snap-type: y mandatory; scroll-padding-top: var(--bar); scroll-pad
 .side-prev { left: calc(var(--pad) / 2); transform: translate(-50%, -50%); color: var(--faint); }
 .side-next:hover { transform: translate(calc(50% + 4px), -50%); }
 .side-prev:hover { transform: translate(calc(-50% - 4px), -50%); color: var(--bone); }
-.reel.page .side-next { right: calc(-1 * var(--pad) / 2); }
-.reel.page .side-prev { left: calc(-1 * var(--pad) / 2); }
+.reel.page .side-next, .education .page .side-next { right: calc(-1 * var(--pad) / 2); }
+.reel.page .side-prev, .education .page .side-prev { left: calc(-1 * var(--pad) / 2); }
+.education .page { padding-left: 0; padding-right: 0; }
+.education.has-stepper { padding-bottom: 0; }
+.slides.is-stepper > .school { border: 0; padding: 0; }
+.front .school-body, .card.single .front { justify-content: center; }
+.front .facts { margin-top: 24px; }
+.front .courses { columns: 2; column-gap: 40px; }
+.front .courses li { break-inside: avoid; }
+.front .courses li:first-child { padding-top: 6px; }
 .side-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .side-tab[hidden] { display: none; }
 @media (min-width: 1100px) {
@@ -619,3 +627,5 @@ html { scroll-snap-type: y mandatory; scroll-padding-top: var(--bar); scroll-pad
   .enter-r, .enter-l { animation: none; }
   .card-inner { transition: none; }
 }
+
+.schools.is-stepper { display: block; }
