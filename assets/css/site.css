@@ -466,8 +466,8 @@ html { scroll-snap-type: y mandatory; scroll-padding-top: var(--bar); scroll-pad
 .back .fig-head { align-items: center; gap: 4px 16px; margin-bottom: 10px; padding-bottom: 10px; }
 .back .fig-kicker { flex-basis: auto; }
 .back .fig-head .flip-back { order: 5; }
-.fig-stage { flex: 1; min-height: 140px; container-type: size; display: flex; justify-content: center; }
-.back .footage canvas { width: min(100%, 320cqh); height: 100%; aspect-ratio: auto !important; max-height: none; background: transparent; }
+.fig-stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.back .footage canvas { flex: none; aspect-ratio: auto !important; max-height: none; max-width: 100%; background: transparent; }
 .back .steps {
   grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 0 14px;
   position: relative; padding-bottom: 3.2em; margin-top: 8px;
@@ -477,6 +477,27 @@ html { scroll-snap-type: y mandatory; scroll-padding-top: var(--bar); scroll-pad
 .back .steps .d { display: none; }
 .back .steps [aria-current="step"] .d { display: block; position: absolute; left: 0; right: 0; bottom: 0; height: 3em; overflow: hidden; font-size: 14px; color: var(--body); }
 .back .steps:not(:has([aria-current])) { padding-bottom: 0; }
+
+/* Wider screens: diagram on the left at its own shape, steps listed on the right */
+@media (min-width: 900px) {
+  .back .footage {
+    display: grid; grid-template-columns: minmax(0, 1fr) clamp(240px, 22vw, 320px);
+    grid-template-rows: auto minmax(0, 1fr); column-gap: clamp(24px, 2.5vw, 40px);
+  }
+  .back .fig-head { grid-column: 1 / -1; }
+  .back .fig-stage { grid-column: 1; grid-row: 2; }
+  .back .steps { grid-column: 2; grid-row: 2; align-self: center; display: block; padding: 0; margin: 0; }
+  .back .steps button { padding: 10px 0 8px; }
+  .back .steps strong { font-size: 15px; }
+  .back .steps .d { display: none; position: static; height: auto; }
+  .back .steps [aria-current="step"] .d { display: block; position: static; height: auto; margin-top: 6px; font-size: 14px; }
+  .back .steps:not(:has([aria-current])) .d { display: block; }
+}
+@media (max-width: 899px) {
+  .back { overflow-y: auto; overscroll-behavior: contain; }
+  .back .footage { flex: none; }
+  .back .fig-stage { flex: none; display: block; }
+}
 
 /* Under every card: Previous on the left, a big Next on the right */
 .slide-foot { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; }

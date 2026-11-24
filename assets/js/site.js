@@ -408,7 +408,7 @@
           text(ctx, "Prioritize", out.x + 10, out.y + f + 8, { size: f + 1 });
           text(ctx, narrow ? "by type" : "by vulnerability type", out.x + 10, out.y + f + 26, { mono: true, size: lbl, color: C.dim });
           // ranked by type of finding, most urgent first
-          const bars = narrow
+          const bars = narrow || out.w < 230
             ? [["CWEs over threshold", 0.92, C.red], ["Weak hashes", 0.64, C.ink], ["Permissive files", 0.42, C.dim]]
             : [["CWEs above severity threshold", 0.92, C.red], ["Weak hashes (MD5)", 0.64, C.ink], ["Overly permissive files", 0.42, C.dim]];
           const bx = out.x + 10, bw = out.w - 20, by0 = out.y + f + 46, rowH = narrow ? 30 : 34;
@@ -1055,6 +1055,28 @@
     inner.style.zoom = String(Math.round(lo * 1000) / 1000);
   };
 
+  // Diagrams keep the shape they were drawn for; the card grows rather than squeezing them.
+  const narrowScreen = () => matchMedia("(max-width: 899px)").matches;
+  const ratioOf = (cv) => {
+    const film = cv.dataset.film, phone = matchMedia("(max-width: 640px)").matches;
+    if (cv.closest(".reel")) return phone && film === "robot" ? 1 : 16 / 9;
+    if (phone) return film === "aws" ? 1 : 4 / 3;
+    return 2;
+  };
+  const sizeFig = (pg) => {
+    const stage = pg.querySelector(".back .fig-stage"), cv = stage?.querySelector("canvas");
+    if (!cv) return;
+    pg.style.height = "";
+    const r = ratioOf(cv);
+    cv.style.width = cv.style.height = "0px";
+    if (narrowScreen()) { const w = stage.clientWidth; cv.style.width = w + "px"; cv.style.height = Math.round(w / r) + "px"; return; }
+    const sw = stage.clientWidth, sh = stage.clientHeight;
+    let w = Math.min(sw, sh * r);
+    const min = Math.min(sw, 640);
+    if (w < min) { pg.style.height = pg.offsetHeight + Math.ceil(min / r - sh) + "px"; w = min; }
+    cv.style.width = Math.floor(w) + "px"; cv.style.height = Math.floor(w / r) + "px";
+  };
+
   document.querySelectorAll("[data-carousel]").forEach((track) => {
     const slides = [...track.children];
     if (slides.length < 2) return;
@@ -1147,7 +1169,7 @@
     const fPrev = foot.querySelector(".foot-prev"), fNext = foot.querySelector(".foot-next");
     let cur = -1;
     const measure = () => section.style.setProperty("--subnav", nav.offsetHeight + "px");
-    const refit = () => { measure(); if (cur >= 0) pagesOf[cur].forEach(fitPage); };
+    const refit = () => { measure(); if (cur >= 0) pagesOf[cur].forEach((pg) => { sizeFig(pg); fitPage(pg); }); };
     const leave = () => after && after.scrollIntoView({ behavior, block: "start" });
     function show(i) {
       i = clamp(i, 0, slides.length - 1);
