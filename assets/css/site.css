@@ -486,11 +486,12 @@ html { scroll-snap-type: y mandatory; scroll-padding-top: var(--bar); scroll-pad
   }
   .back .fig-head { grid-column: 1 / -1; }
   .back .fig-stage { grid-column: 1; grid-row: 2; }
-  .back .steps { grid-column: 2; grid-row: 2; align-self: center; display: block; padding: 0; margin: 0; }
-  .back .steps button { padding: 10px 0 8px; }
-  .back .steps strong { font-size: 15px; }
+  .back .steps { grid-column: 2; grid-row: 2; align-self: start; display: block; padding: 0; margin: 0; }
+  .back .steps button { display: block; padding: 9px 0 8px; }
+  .back .steps .n { display: inline-block; width: 2.4em; }
+  .back .steps strong { display: inline; font-size: 15px; margin: 0; }
   .back .steps .d { display: none; position: static; height: auto; }
-  .back .steps [aria-current="step"] .d { display: block; position: static; height: auto; margin-top: 6px; font-size: 14px; }
+  .back .steps [aria-current="step"] .d { display: block; position: static; height: auto; margin: 6px 0 2px 2.4em; font-size: 14px; }
   .back .steps:not(:has([aria-current])) .d { display: block; }
 }
 @media (max-width: 899px) {

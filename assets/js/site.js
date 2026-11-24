@@ -1075,6 +1075,21 @@
     const min = Math.min(sw, 640);
     if (w < min) { pg.style.height = pg.offsetHeight + Math.ceil(min / r - sh) + "px"; w = min; }
     cv.style.width = Math.floor(w) + "px"; cv.style.height = Math.floor(w / r) + "px";
+    // the step list must fit beside the diagram too; tallest case is the longest description open
+    const ol = pg.querySelector(".back .steps");
+    if (ol) {
+      const cur = ol.querySelector('[aria-current="step"]');
+      let tallest = ol.scrollHeight;
+      ol.querySelectorAll("li").forEach((li) => {
+        if (li === cur) return;
+        cur?.removeAttribute("aria-current"); li.setAttribute("aria-current", "step");
+        tallest = Math.max(tallest, ol.scrollHeight);
+        li.removeAttribute("aria-current");
+      });
+      cur?.setAttribute("aria-current", "step");
+      const room = stage.clientHeight;
+      if (tallest > room) pg.style.height = pg.offsetHeight + Math.ceil(tallest - room) + "px";
+    }
   };
 
   document.querySelectorAll("[data-carousel]").forEach((track) => {
